@@ -1,16 +1,16 @@
 pipeline {
-    agent any/*{
+    agent {
         docker {
             image 'alpine:latest'
         }
-    }*/
+    }
     
     stages {
         stage('Example') {
             steps {
                 echo 'Running on Alpine'
-                //sh 'uname -a'
-                //sh 'ls'
+                sh 'ls'
+                sh 'uname -a'
             }
         }
     }
