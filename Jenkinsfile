@@ -8,12 +8,11 @@ pipeline {
     stages {
         stage('Print OS Name') {
             steps {
-                echo "Test docker container"
                 script {
-                    sh 'ls'
-                    sh 'cat Dockerfile'
-                    sh 'uname -a'
-                }  
+                    sh 'echo "Hello World"'
+                    echo 'This is another step'
+                }
+                echo 'This is a step outside the script block'
             }
         }
     }
