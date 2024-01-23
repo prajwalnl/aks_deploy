@@ -10,6 +10,7 @@ pipeline {
             steps {
                 echo 'Running on Alpine'
                 sh 'uname -a'
+                sh 'ls'
             }
         }
     }
