@@ -1,14 +1,24 @@
 pipeline {
-    agent {
-        docker {
-            image 'alpine:latest'
-        }
-    }
-    
+    agent any
+
     stages {
-        stage('Example') {
+
+        stage('Alpine Image') {
+            agent {
+                docker {
+                    image 'alpine:latest'
+                }
+            }
             steps {
-                echo 'Running on Alpine'
+                echo 'Executing Job with Alpine Image'
+                sh 'uname -a'
+            }
+        }
+
+        stage('No Image') {
+            steps {
+                echo 'Executing Job without Image'
+                sh 'echo "Hello, Jenkins!"'
                 sh 'ls'
                 sh 'uname -a'
             }
