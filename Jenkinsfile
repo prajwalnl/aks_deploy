@@ -1,20 +1,14 @@
 pipeline {
-    agent none
-    stages {
-        stage('Back-end') {
-            agent {
-                any { image 'maven:3.9.6-eclipse-temurin-17-alpine' }
-            }
-            steps {
-                sh 'mvn --version'
-            }
+    agent {
+        docker {
+            image 'alpine:latest'
         }
-        stage('Front-end') {
-            agent {
-                any { image 'node:20.11.0-alpine3.19' }
-            }
+    }
+
+    stages {
+        stage('Print OS Name') {
             steps {
-                sh 'node --version'
+                sh 'uname -a'
             }
         }
     }
