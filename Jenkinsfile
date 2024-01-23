@@ -3,6 +3,15 @@ pipeline {
 
     stages {
 
+        stage('No Image') {
+            steps {
+                echo 'Executing Job without Image'
+                sh 'echo "Hello, Jenkins!"'
+                sh 'ls'
+                sh 'uname -a'
+            }
+        }
+        
         stage('Alpine Image') {
             agent {
                 docker {
@@ -15,13 +24,5 @@ pipeline {
             }
         }
 
-        stage('No Image') {
-            steps {
-                echo 'Executing Job without Image'
-                sh 'echo "Hello, Jenkins!"'
-                sh 'ls'
-                sh 'uname -a'
-            }
-        }
     }
 }
