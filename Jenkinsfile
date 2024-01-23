@@ -9,7 +9,9 @@ pipeline {
         stage('Print OS Name') {
             steps {
                 echo "Test docker container"
-                sh 'uname -a'
+                sh 'ls'
+                sh 'cat Dockerfile'
+                //sh 'uname -a'
             }
         }
     }
