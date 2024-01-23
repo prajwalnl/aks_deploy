@@ -1,18 +1,15 @@
 pipeline {
-    agent any/*{
+    agent {
         docker {
             image 'alpine:latest'
         }
-    }*/
-
+    }
+    
     stages {
-        stage('Print OS Name') {
+        stage('Example') {
             steps {
-                script {
-                    sh 'echo "Hello World"'
-                    echo 'This is another step'
-                }
-                echo 'This is a step outside the script block'
+                echo 'Running on Alpine'
+                sh 'uname -a'
             }
         }
     }
