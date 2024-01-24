@@ -8,7 +8,7 @@ pipeline {
                 echo 'Executing Job without Image'
                 sh 'echo "Hello, Jenkins!"'
                 sh 'ls'
-                sh 'uname -a'
+                sh 'cat /etc/os-release'
             }
         }
         
@@ -20,7 +20,7 @@ pipeline {
             }
             steps {
                 echo 'Executing Job with Alpine Image'
-                sh 'uname -a'
+                sh 'cat /etc/os-release'
             }
         }
 
