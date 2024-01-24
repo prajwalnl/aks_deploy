@@ -7,16 +7,12 @@ pipeline {
             steps {
                 sh 'ls'
                 sh 'touch demo.txt'
-                sh 'ls'
             }
         }
         stage('No Image') {
             steps {
                 echo 'Executing Job without Image'
                 sh 'cat /etc/os-release'
-                sh 'ls'
-                deleteDir()
-                sh 'ls'
                 script {
                     echo 'This is a step inside a script block'
                 }
