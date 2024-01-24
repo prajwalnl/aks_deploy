@@ -6,7 +6,7 @@ pipeline {
         stage('Clean Workspace') {
             steps {
                 sh 'ls'
-                sh 'touch demo.txt'
+                //sh 'touch demo.txt'
             }
         }
         stage('No Image') {
