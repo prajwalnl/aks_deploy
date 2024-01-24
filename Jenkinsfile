@@ -15,9 +15,10 @@ pipeline {
                 echo 'Executing Job without Image'
                 sh 'cat /etc/os-release'
                 sh 'ls'
+                deleteDir()
+                sh 'ls'
                 script {
                     echo 'This is a step inside a script block'
-                    sh 'ls'
                 }
             }
         }
@@ -31,7 +32,6 @@ pipeline {
             steps {
                 echo 'Executing Job with Alpine Image'
                 sh 'cat /etc/os-release'
-                sh 'ls'
             }
         }
     }
@@ -39,7 +39,7 @@ pipeline {
     post {
         always {
             echo 'This runs at end of pipeline'
-            deleteDir()     // Delete the entire workspace
+            //deleteDir()     // Delete the entire workspace
         }
         success {
             echo 'This runs only if the pipeline is successful'
