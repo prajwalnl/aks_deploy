@@ -2,13 +2,7 @@ pipeline {
     agent any
 
     stages {
-
-        stage('Clean Workspace') {
-            steps {
-                sh 'ls'
-                //sh 'touch demo.txt'
-            }
-        }
+        
         stage('No Image') {
             steps {
                 echo 'Executing Job without Image'
@@ -35,7 +29,7 @@ pipeline {
     post {
         always {
             echo 'This runs at end of pipeline'
-            //deleteDir()     // Delete the entire workspace
+            deleteDir()     // Delete the entire workspace
         }
         success {
             echo 'This runs only if the pipeline is successful'
