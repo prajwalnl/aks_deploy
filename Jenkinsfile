@@ -34,8 +34,8 @@ pipeline {
         stage('Build and push docker image') {
             steps{
                 script {
-                    ls
-                    cat Dockerfile
+                    sh 'ls'
+                    sh 'cat Dockerfile'
                     sh 'docker images'
                     dockerImage = docker.build registry + ":$BUILD_NUMBER"      // Build Docker image using Dockerfile 
                     sh 'docker images'
