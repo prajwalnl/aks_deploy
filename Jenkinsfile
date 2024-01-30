@@ -19,15 +19,20 @@ pipeline {
             }
         }
         
+        stage('Demo docker hello-world') {
+            steps {
+                sh 'docker run hello-world'
+            }
+        }
+
         stage('Docker Image') {
             agent {
                 docker {
-                    image 'alpine:latest' //'hello-world:latest'
+                    image 'alpine:latest'
                 }
             }
             steps {
                 echo 'Executing Job with docker image'
-                //sh 'docker run hello-world'
                 sh 'cat /etc/os-release'
             }
         }
