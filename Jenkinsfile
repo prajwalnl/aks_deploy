@@ -35,10 +35,7 @@ pipeline {
             steps{
                 script {
                     sh 'ls'
-                    sh 'cat Dockerfile'
-                    sh 'docker images'
                     dockerImage = docker.build registry + ":$BUILD_NUMBER"      // Build Docker image using Dockerfile 
-                    sh 'docker images'
                     docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {   // Authenticate with Docker Hub
                     dockerImage.push()              // Push Docker image to Docker Hub
                   }
@@ -49,12 +46,12 @@ pipeline {
 
     post {
         always {
-            // Clean up Docker images and containers
+            // Clean up Docker images, containers and workspace.
             script {
                 sh 'docker rmi -f $(docker images -q)'
                 sh 'docker system prune -f'
-            }
-            deleteDir()
+                deleteDir()
+            }   
         }
         success {
             echo 'This runs only if the pipeline is successful'
