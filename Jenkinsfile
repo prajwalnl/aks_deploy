@@ -22,12 +22,12 @@ pipeline {
         stage('Docker Image') {
             agent {
                 docker {
-                    image 'hello-world:latest'
+                    image 'alpine:latest' //'hello-world:latest'
                 }
             }
             steps {
                 echo 'Executing Job with docker image'
-                sh 'docker run hello-world'
+                //sh 'docker run hello-world'
                 sh 'cat /etc/os-release'
             }
         }
