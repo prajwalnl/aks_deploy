@@ -28,9 +28,10 @@ pipeline {
         stage('Build and push docker image') {
             steps {
                 script {
+                    sh 'docker images'
                     // Build Docker image using Dockerfile
                     dockerImage = docker.build("prajwalnl/test_images:${BUILD_NUMBER}", "-f Dockerfile .")
-
+                    sh 'docker images'
                     // Authenticate with Docker Hub
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
                     
