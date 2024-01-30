@@ -1,43 +1,47 @@
 pipeline {
     agent any
 
+    environment{
+        
+        registry = "prajwalnl/test_images"
+        registryCredential = 'dockerhub-credential'        
+    }
+
     stages {
 
-        stage('No Image') {
-            steps {
-                echo 'Executing Job without Image'
-                sh 'cat /etc/os-release'
-                script {
-                    echo 'This is a step inside a script block'
-                }
-            }
-        }
+        // stage('No Image') {
+        //     steps {
+        //         echo 'Executing Job without Image'
+        //         sh 'cat /etc/os-release'
+        //         script {
+        //             echo 'This is a step inside a script block'
+        //         }
+        //     }
+        // }
         
-        stage('Alpine Image') {
-            agent {
-                docker {
-                    image 'alpine:latest'
-                }
-            }
-            steps {
-                echo 'Executing Job with Alpine Image'
-                sh 'cat /etc/os-release'
-            }
-        }
+        // stage('Alpine Image') {
+        //     agent {
+        //         docker {
+        //             image 'alpine:latest'
+        //         }
+        //     }
+        //     steps {
+        //         echo 'Executing Job with Alpine Image'
+        //         sh 'cat /etc/os-release'
+        //     }
+        // }
 
         stage('Build and push docker image') {
-            steps {
+            steps{
                 script {
+                    ls
+                    cat Dockerfile
                     sh 'docker images'
-                    // Build Docker image using Dockerfile
-                    dockerImage = docker.build("prajwalnl/test_images:${BUILD_NUMBER}", "-f .") //Dockerfile .")
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"      // Build Docker image using Dockerfile 
                     sh 'docker images'
-                    // Authenticate with Docker Hub
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
-                    
-                    // Push Docker image to Docker Hub
-                    dockerImage.push()
-                    }
+                    docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {   // Authenticate with Docker Hub
+                    dockerImage.push()              // Push Docker image to Docker Hub
+                  }
                 }
             }
         }
