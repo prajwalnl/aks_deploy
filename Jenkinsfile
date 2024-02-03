@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-    environment{
-        
-        registry = "prajwalnl/test_images"
-        registryCredential = 'dockerhub-credential'        
-    }
-
     stages {
 
         stage('No Image') {
@@ -16,12 +10,6 @@ pipeline {
                 script {
                     echo 'This is a step inside a script block'
                 }
-            }
-        }
-        
-        stage('Demo docker hello-world') {
-            steps {
-                sh 'docker run hello-world'
             }
         }
 
@@ -38,12 +26,16 @@ pipeline {
         }
 
         stage('Build and push docker image') {
-            steps{
+            environment {
+                registry = "prajwalnl/test_images"
+                registryCredential = 'dockerhub-credential'        
+            }
+            steps {
                 script {
                     dockerImage = docker.build registry + ":$BUILD_NUMBER"      // Build Docker image using Dockerfile 
                     docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {   // Authenticate with Docker Hub
-                    dockerImage.push()              // Push Docker image to Docker Hub
-                  }
+                    dockerImage.push()         // Push Docker image to Docker Hub
+                    }
                 }
             }
         }
