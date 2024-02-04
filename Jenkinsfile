@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-                DOCKER_IMAGE_NAME = "test-image"    
+                DOCKER_IMAGE_NAME = "test-image"
+                DOCKER_IMAGE = ""   
             }
 
     stages {
@@ -32,8 +33,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER_TAG}"
-                    dockerImage = docker.build(dockerTag)
+                    dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
+                    DOCKER_IMAGE = docker.build(dockerTag) //dockerImage
                 }
             }
         }
@@ -46,9 +47,9 @@ pipeline {
             }
             steps {
                 script {
-                    def dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER_TAG}"
+                    //def dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
                     docker.withRegistry(registryURL, registryCredential) {
-                        dockerImage.push(dockerTag)
+                        DOCKER_IMAGE.push()  //dockerTag
                     }
                 }
             }
