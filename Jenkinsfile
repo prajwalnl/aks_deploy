@@ -33,11 +33,11 @@ pipeline {
             environment {
                 registryName = "prajwalnl/test_images"
                 registryURL = "https://registry.hub.docker.com"
-                registryCredential = 'dockerhub-credential'
+                registryCredential = 'dockerhub-credential'        
             }
             steps {
                 script {
-                    dockerImage = docker.build registryURL + "/" + registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile
+                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
                     docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
                     dockerImage.push()         // Push Docker image to Docker Hub
                     }
