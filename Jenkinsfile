@@ -36,15 +36,13 @@ pipeline {
             environment {
                 dockerHubRegistryName = "prajwalnl/aks_deploy_poc"
                 registryURL = "https://registry.hub.docker.com"
-                registryCredential = credentials('dockerhub-credential') //'dockerhub-credential'        
+                registryCredential = 'dockerhub-credential'        
             }
             steps {
                 script {
                     dockerHubImage = docker.build dockerHubRegistryName + ":$BUILD_NUMBER"
                     docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-                        // Push Docker image to Docker Hub with latest and build tag
-                        dockerHubImage.push()
-                        //dockerHubImage.push(latest)         
+                        dockerHubImage.push()       // Push Docker image to Docker Hub
                     }
                 }
             }
@@ -54,7 +52,7 @@ pipeline {
             environment {
                 acrRegistryName = "aks_deploy_poc" 
                 registryURL = "https://aksdeploypoc.azurecr.io"
-                registryCredential = credentials('acr-cred')   //'acr-cred'
+                registryCredential = 'acr-cred'
             }
             steps {
                 script {
