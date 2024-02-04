@@ -33,7 +33,7 @@ pipeline {
         stage('Build image') {
             environment {
                 dockerHubRregistryName = "prajwalnl/aks_deploy_poc"
-                acrRegistryName = "aksdeploypoc" 
+                acrRegistryName = "aks_deploy_poc" 
             }
             steps {
                 script {
