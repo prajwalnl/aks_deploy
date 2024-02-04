@@ -2,58 +2,37 @@ pipeline {
     agent any
 
     environment {
-                DOCKER_IMAGE_NAME = "test-image"
+                DOCKER_IMAGE_NAME = "test_image"
                 DOCKER_IMAGE = ""   
             }
 
     stages {
-
-        // stage('No Image') {
-        //     steps {
-        //         echo 'Executing Job without Image'
-        //         sh 'cat /etc/os-release'
-        //         script {
-        //             echo 'This is a step inside a script block'
-        //         }
-        //     }
-        // }
-
-        // stage('Docker Image') {
-        //     agent {
-        //         docker {
-        //             image 'alpine:latest'
-        //         }
-        //     }
-        //     steps {
-        //         echo 'Executing Job with docker image'
-        //         sh 'cat /etc/os-release'
-        //     }
-        // }
 
         stage('Build Docker Image') {
             steps {
                 script {
                     dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
                     DOCKER_IMAGE = docker.build(dockerTag) //dockerImage
+                    sh 'echo $DOCKER_IMAGE'
                 }
             }
         }
 
-        stage('Push to DockerHub') {
-            environment {
-                //registryName = "prajwalnl/test_images"
-                registryURL = "https://registry.hub.docker.com"
-                registryCredential = 'dockerhub-credential' 
-            }
-            steps {
-                script {
-                    //def dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
-                    docker.withRegistry(registryURL, registryCredential) {
-                        DOCKER_IMAGE.push()  //dockerTag
-                    }
-                }
-            }
-        }
+        // stage('Push to DockerHub') {
+        //     environment {
+        //         //registryName = "prajwalnl/test_images"
+        //         registryURL = "https://registry.hub.docker.com"
+        //         registryCredential = 'dockerhub-credential' 
+        //     }
+        //     steps {
+        //         script {
+        //             def dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
+        //             docker.withRegistry(registryURL, registryCredential) {
+        //                 DOCKER_IMAGE.push(dockerTag)  //
+        //             }
+        //         }
+        //     }
+        // }
 
         // stage('Push image to DockerHub') {
         //     environment {
@@ -69,9 +48,6 @@ pipeline {
         //         }
         //     }
         // }
-
-
-
 
 
         // stage('Push to ACR') {
