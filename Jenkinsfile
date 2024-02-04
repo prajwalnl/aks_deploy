@@ -53,7 +53,7 @@ pipeline {
             steps {
                 script {
                     dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
-                    docker.withRegistry( 'https://${registryURL}', registryCredential ) {   // Authenticate with Docker Hub
+                    docker.withRegistry( 'http://{registryURL}', registryCredential ) {   // Authenticate with Docker Hub
                     dockerImage.push()         // Push Docker image to Docker Hub
                     }
                 }
