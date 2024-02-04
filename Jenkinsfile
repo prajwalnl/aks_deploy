@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+                imageName = "test_image:${BUILD_NUMBER}"
                 dockerImage = ""      
             }
 
@@ -30,12 +31,9 @@ pipeline {
         // }
 
         stage('Build image') {
-            environment {
-                registryName = "test_image"      
-            }
             steps {
                 script {
-                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
+                    dockerImage = docker.build imageName    // Build Docker image using Dockerfile 
                 }
             }
         }
@@ -48,10 +46,10 @@ pipeline {
             }
             steps {
                 script {
-                    //sh "docker tag test_image:${env.BUILD_NUMBER} prajwalnl/aks_deploy_poc:${env.BUILD_NUMBER}"
-                    dockerImage.tag (dockerImage "${registryName}:${BUILD_NUMBER}")
+                    sh ('docker tag ${imageName} ${registryName}:${BUILD_NUMBER}')
+                    testImage2 = docker.image('${registryName}:${BUILD_NUMBER}')
                     docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-                    testImage.push ("prajwalnl/aks_deploy_poc:${BUILD_NUMBER}") //dockerImage.push()         // Push Docker image to Docker Hub
+                    testImage2.push()         // Push Docker image to Docker Hub
                     }
                 }
             }
