@@ -7,62 +7,62 @@ pipeline {
 
     stages {
 
-        // stage('No Image') {
+        stage('No Image') {
+            steps {
+                echo 'Executing Job without Image'
+                sh 'echo ${helloWorld}'
+                sh 'cat /etc/os-release'
+                script {
+                    echo 'This is a step inside a script block'
+                    echo ${helloWorld}
+                }
+            }
+        }
+
+        stage('Docker Image') {
+            agent {
+                docker {
+                    image 'alpine:latest'
+                }
+            }
+            steps {
+                echo 'Executing Job with docker image'
+                echo ${helloWorld}
+                sh 'cat /etc/os-release'
+            }
+        } 
+
+        // stage('Build and push image to dockerHub') {
+        //     environment {
+        //         dockerHubRegistryName = "prajwalnl/aks_deploy_poc"
+        //         registryURL = "https://registry.hub.docker.com"
+        //         registryCredential = 'dockerhub-credential'        
+        //     }
         //     steps {
-        //         echo 'Executing Job without Image'
-        //         sh 'echo ${helloWorld}'
-        //         sh 'cat /etc/os-release'
         //         script {
-        //             echo 'This is a step inside a script block'
-        //             echo ${helloWorld}
+        //             dockerHubImage = docker.build dockerHubRegistryName + ":$BUILD_NUMBER"
+        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
+        //                 dockerHubImage.push()       // Push Docker image to Docker Hub
+        //             }
         //         }
         //     }
         // }
 
-        // stage('Docker Image') {
-        //     agent {
-        //         docker {
-        //             image 'alpine:latest'
-        //         }
+        // stage('Build and push image to ACR') {
+        //     environment {
+        //         acrRegistryName = "aks_deploy_poc" 
+        //         registryURL = "https://aksdeploypoc.azurecr.io"
+        //         registryCredential = 'acr-cred'
         //     }
         //     steps {
-        //         echo 'Executing Job with docker image'
-        //         echo ${helloWorld}
-        //         sh 'cat /etc/os-release'
+        //         script {
+        //             acrImage = docker.build acrRegistryName + ":$BUILD_NUMBER"
+        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with ACR
+        //                 acrImage.push()         // Push Docker image to ACR
+        //             }
+        //         }
         //     }
-        // } 
-
-        stage('Build and push image to dockerHub') {
-            environment {
-                dockerHubRegistryName = "prajwalnl/aks_deploy_poc"
-                registryURL = "https://registry.hub.docker.com"
-                registryCredential = 'dockerhub-credential'        
-            }
-            steps {
-                script {
-                    dockerHubImage = docker.build dockerHubRegistryName + ":$BUILD_NUMBER"
-                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-                        dockerHubImage.push()       // Push Docker image to Docker Hub
-                    }
-                }
-            }
-        }
-
-        stage('Build and push image to ACR') {
-            environment {
-                acrRegistryName = "aks_deploy_poc" 
-                registryURL = "https://aksdeploypoc.azurecr.io"
-                registryCredential = 'acr-cred'
-            }
-            steps {
-                script {
-                    acrImage = docker.build acrRegistryName + ":$BUILD_NUMBER"
-                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with ACR
-                        acrImage.push()         // Push Docker image to ACR
-                    }
-                }
-            }
-        }
+        // }
     }
 
     post {
