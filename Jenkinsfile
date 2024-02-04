@@ -49,9 +49,9 @@ pipeline {
             steps {
                 script {
                     dockerImage.tag("${registryName}:${BUILD_NUMBER}")
-                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-                    dockerImage.push()         // Push Docker image to Docker Hub
-                    }
+                    // docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
+                    // dockerImage.push()         // Push Docker image to Docker Hub
+                    // }
                 }
             }
         }
