@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+                dockerImage = ""      
+            }
+
     stages {
 
         stage('No Image') {
@@ -43,14 +47,15 @@ pipeline {
         stage('Build and push image to ACR') {
             environment {
                 registryName = "aksdeploypoc"
-                //registryCredential = 'dockerhub-credential'        
+                registryURL = "aksdeploypoc.azurecr.io"
+                registryCredential = 'acr-cred'        
             }
             steps {
                 script {
                     dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
-                    //docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {   // Authenticate with Docker Hub
-                    //dockerImage.push()         // Push Docker image to Docker Hub
-                    //}
+                    docker.withRegistry( 'https://${registryURL}', registryCredential ) {   // Authenticate with Docker Hub
+                    dockerImage.push()         // Push Docker image to Docker Hub
+                    }
                 }
             }
         }
