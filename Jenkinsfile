@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-                dockerImage = ""      
+                DOCKER_IMAGE_NAME = "test-image:${BUILD_NUMBER_TAG}"     
             }
 
     stages {
@@ -29,37 +29,72 @@ pipeline {
         //     }
         // }
 
-        stage('Build and push image to DockerHub') {
-            environment {
-                registryName = "prajwalnl/test_images"
-                registryURL = "https://registry.hub.docker.com"
-                registryCredential = 'dockerhub-credential'        
-            }
+        stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
-                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-                    dockerImage.push()         // Push Docker image to Docker Hub
-                    }
+                    dockerImage = docker.build(DOCKER_IMAGE_NAME)
                 }
             }
         }
 
-        stage('Build and push image to ACR') {
-            environment {
-                registryName = "aksdeploypoc"
-                registryURL = "https://aksdeploypoc.azurecr.io"
-                registryCredential = 'acr-cred'
-            }
-            steps {
-                script {
-                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile
-                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-                    dockerImage.push()         // Push Docker image to Docker Hub
-                    }
-                }
-            }
-        }
+        // stage('Push to DockerHub') {
+        //     environment {
+        //         registryCredential = credentials('dockerhub-credential')
+        //     }
+        //     steps {
+        //         script {
+        //             def dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER_TAG}"
+        //             docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
+        //                 dockerImage.push(dockerTag)
+        //             }
+        //         }
+        //     }
+        // }
+
+        // stage('Push image to DockerHub') {
+        //     environment {
+        //         registryName = "prajwalnl/test_images"
+        //         registryURL = "https://registry.hub.docker.com"
+        //         registryCredential = 'dockerhub-credential'        
+        //     }
+        //     steps {
+        //         script {
+        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
+        //             dockerImage.push()         // Push Docker image to Docker Hub
+        //             }
+        //         }
+        //     }
+        // }
+
+
+
+
+
+        // stage('Push to ACR') {
+        //     steps {
+        //         script {
+        //             def dockerTag = "${ACR_USERNAME}/${DOCKER_IMAGE_NAME}:${BUILD_NUMBER_TAG}"
+        //             docker.withRegistry('https://aksdeploypoc.azurecr.io', ACR_USERNAME, ACR_PASSWORD) {
+        //                 dockerImage.push(dockerTag)
+        //             }
+        //         }
+        //     }
+        // }
+
+        // stage('Push image to ACR') {
+        //     environment {
+        //         registryName = "aksdeploypoc"
+        //         registryURL = "https://aksdeploypoc.azurecr.io"
+        //         registryCredential = 'acr-cred'
+        //     }
+        //     steps {
+        //         script {
+        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
+        //             dockerImage.push()         // Push Docker image to Docker Hub
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     post {
