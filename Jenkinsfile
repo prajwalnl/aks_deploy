@@ -29,47 +29,43 @@ pipeline {
         //     }
         // }
 
-        stage('Build Docker Image') {
+        stage('Build image') {
             environment {
-                DOCKER_IMAGE_NAME = "aks_deploy_poc"
+                registryName = "test_image"      
             }
             steps {
                 script {
-                    def dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
-                    dockerImage = docker.build(dockerTag)
+                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
                 }
             }
         }
 
-        stage('Tag and Push to DockerHub') {
+        stage('Push image to DockerHub') {
             environment {
-                REGISTRY_NAME = "prajwalnl/aks_deploy_poc"
-                REGISTRY_URL = "https://registry.hub.docker.com"
-                REGISTRY_CREDENTIAL = credentials('dockerhub-credential')
+                registryName = "prajwalnl/aks_deploy_poc"
+                registryURL = "https://registry.hub.docker.com"
+                registryCredential = 'dockerhub-credential'       //credentials('dockerhub-credential') 
             }
             steps {
                 script {
-                    def dockerTag = "${REGISTRY_NAME}:${BUILD_NUMBER}"
-                    dockerImage.tag(dockerTag)
-                    docker.withRegistry(REGISTRY_URL, REGISTRY_CREDENTIAL) {
-                        dockerImage.push(dockerTag)
+                    dockerImage.tag("${registryName}:${BUILD_NUMBER}")
+                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
+                    dockerImage.push()         // Push Docker image to Docker Hub
                     }
                 }
             }
         }
 
-        // stage('Tag and Push to ACR') {
+        // stage('Push image to ACR') {
         //     environment {
-        //         REGISTRY_NAME = "aksDeployPOC"
-        //         REGISTRY_URL = "https://aksdeploypoc.azurecr.io"
-        //         REGISTRY_CREDENTIAL = credentials('acr-cred')
+        //         registryName = "aksdeploypoc"
+        //         registryURL = "https://aksdeploypoc.azurecr.io"
+        //         registryCredential = 'acr-cred'
         //     }
         //     steps {
         //         script {
-        //             def dockerTag = "${REGISTRY_NAME}:${BUILD_NUMBER}"
-        //             dockerImage.tag(dockerTag)
-        //             docker.withRegistry(REGISTRY_URL, REGISTRY_CREDENTIAL) {
-        //                 dockerImage.push(dockerTag)
+        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
+        //             dockerImage.push()         // Push Docker image to Docker Hub
         //             }
         //         }
         //     }
