@@ -14,8 +14,7 @@ pipeline {
                 sh 'cat /etc/os-release'
                 script {
                     echo 'This is a step inside a script block'
-                    echo ${helloWorld}
-                    cat /etc/os-release
+                    echo "${helloWorld}"
                 }
             }
         }
@@ -28,7 +27,6 @@ pipeline {
             }
             steps {
                 echo 'Executing Job with docker image'
-                echo "${helloWorld}"
                 sh 'cat /etc/os-release'
             }
         } 
