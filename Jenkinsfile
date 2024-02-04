@@ -48,10 +48,11 @@ pipeline {
             }
             steps {
                 script {
-                    dockerImage.tag("${registryName}:${BUILD_NUMBER}")
-                    // docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-                    // dockerImage.push()         // Push Docker image to Docker Hub
-                    // }
+                    //sh "docker tag test_image:${env.BUILD_NUMBER} prajwalnl/aks_deploy_poc:${env.BUILD_NUMBER}"
+                    dockerImage.image(${registryName})
+                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
+                    dockerImage.push()         // Push Docker image to Docker Hub
+                    }
                 }
             }
         }
