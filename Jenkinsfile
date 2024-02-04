@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-                DOCKER_IMAGE_NAME = "test_image"
+                DOCKER_IMAGE_NAME = "test_images"
                 DOCKER_IMAGE = ""   
             }
 
@@ -19,35 +19,19 @@ pipeline {
 
         stage('Push to DockerHub') {
             environment {
-                dockerRepoName = "prajwalnl/"
+                //dockerRepoName = "prajwalnl/"
                 registryURL = "https://registry.hub.docker.com"
                 registryCredential = 'dockerhub-credential' 
             }
             steps {
                 script {
-                    def dockerTag = dockerRepoName + "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
+                    def dockerTag = "registry.hub.docker.com/prajwalnl/${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
                     docker.withRegistry(registryURL, registryCredential) {
-                        DOCKER_IMAGE.push(dockerTag)  //
+                        DOCKER_IMAGE.push(dockerTag)
                     }
                 }
             }
         }
-
-        // stage('Push image to DockerHub') {
-        //     environment {
-        //         registryName = "prajwalnl/test_images"
-        //         registryURL = "https://registry.hub.docker.com"
-        //         registryCredential = 'dockerhub-credential'        
-        //     }
-        //     steps {
-        //         script {
-        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-        //             dockerImage.push()         // Push Docker image to Docker Hub
-        //             }
-        //         }
-        //     }
-        // }
-
 
         // stage('Push to ACR') {
         //     steps {
