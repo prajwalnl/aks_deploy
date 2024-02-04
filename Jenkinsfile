@@ -48,6 +48,7 @@ pipeline {
                 script {
                     sh ('docker tag ${imageName} ${registryName}:${BUILD_NUMBER}')
                     testImage2 = docker.image('${registryName}:${BUILD_NUMBER}')
+                    sh ('echo $testImage2')
                     docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
                     testImage2.push()         // Push Docker image to Docker Hub
                     }
