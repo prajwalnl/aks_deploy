@@ -25,17 +25,32 @@ pipeline {
             }
         }
 
-        stage('Build and push docker image') {
+        stage('Build and push image to DockerHub') {
             environment {
-                registry = "registry.hub.docker.com/prajwalnl/test_images"
+                registryName = "registry.hub.docker.com/prajwalnl/test_images"
                 registryCredential = 'dockerhub-credential'        
             }
             steps {
                 script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
+                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
                     docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {   // Authenticate with Docker Hub
                     dockerImage.push()         // Push Docker image to Docker Hub
                     }
+                }
+            }
+        }
+
+        stage('Build and push image to ACR') {
+            environment {
+                registryName = "aksdeploypoc"
+                //registryCredential = 'dockerhub-credential'        
+            }
+            steps {
+                script {
+                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
+                    //docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {   // Authenticate with Docker Hub
+                    //dockerImage.push()         // Push Docker image to Docker Hub
+                    //}
                 }
             }
         }
