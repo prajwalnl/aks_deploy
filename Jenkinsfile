@@ -7,27 +7,27 @@ pipeline {
 
     stages {
 
-        stage('No Image') {
-            steps {
-                echo 'Executing Job without Image'
-                sh 'cat /etc/os-release'
-                script {
-                    echo 'This is a step inside a script block'
-                }
-            }
-        }
+        // stage('No Image') {
+        //     steps {
+        //         echo 'Executing Job without Image'
+        //         sh 'cat /etc/os-release'
+        //         script {
+        //             echo 'This is a step inside a script block'
+        //         }
+        //     }
+        // }
 
-        stage('Docker Image') {
-            agent {
-                docker {
-                    image 'alpine:latest'
-                }
-            }
-            steps {
-                echo 'Executing Job with docker image'
-                sh 'cat /etc/os-release'
-            }
-        }
+        // stage('Docker Image') {
+        //     agent {
+        //         docker {
+        //             image 'alpine:latest'
+        //         }
+        //     }
+        //     steps {
+        //         echo 'Executing Job with docker image'
+        //         sh 'cat /etc/os-release'
+        //     }
+        // }
 
         // stage('Build and push image to DockerHub') {
         //     environment {
@@ -47,13 +47,13 @@ pipeline {
         stage('Build and push image to ACR') {
             environment {
                 registryName = "aksdeploypoc"
-                registryURL = "aksdeploypoc.azurecr.io"
+                registryURL = "https://aksdeploypoc.azurecr.io"
                 registryCredential = 'acr-cred'        
             }
             steps {
                 script {
                     dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
-                    docker.withRegistry( 'https://${registryURL}', registryCredential ) {   // Authenticate with Docker Hub
+                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
                     dockerImage.push()         // Push Docker image to Docker Hub
                     }
                 }
