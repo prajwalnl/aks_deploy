@@ -29,31 +29,31 @@ pipeline {
         //     }
         // }
 
-        // stage('Build and push image to DockerHub') {
-        //     environment {
-        //         registryName = "registry.hub.docker.com/prajwalnl/test_images"
-        //         registryCredential = 'dockerhub-credential'        
-        //     }
-        //     steps {
-        //         script {
-        //             dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
-        //             docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {   // Authenticate with Docker Hub
-        //             dockerImage.push()         // Push Docker image to Docker Hub
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Build and push image to DockerHub') {
+            environment {
+                registryName = "prajwalnl/test_images"
+                registryCredential = 'dockerhub-credential'        
+            }
+            steps {
+                script {
+                    dockerImage = docker.build "registry.hub.docker.com" + registry + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
+                    docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {   // Authenticate with Docker Hub
+                    dockerImage.push()         // Push Docker image to Docker Hub
+                    }
+                }
+            }
+        }
 
         stage('Build and push image to ACR') {
             environment {
                 registryName = "aksdeploypoc"
-                registryURL = "https://aksdeploypoc.azurecr.io"
+                registryURL = "aksdeploypoc.azurecr.io"
                 registryCredential = 'acr-cred'        
             }
             steps {
                 script {
                     dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
-                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
+                    docker.withRegistry( "https://${registryURL}", registryCredential ) {   // Authenticate with Docker Hub
                     dockerImage.push()         // Push Docker image to Docker Hub
                     }
                 }
