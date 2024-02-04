@@ -2,44 +2,46 @@ pipeline {
     agent any
 
     environment {
-                dockerImage = ""      
+                helloWorld = "Hello World!"   
             }
 
     stages {
 
-        // stage('No Image') {
-        //     steps {
-        //         echo 'Executing Job without Image'
-        //         sh 'cat /etc/os-release'
-        //         script {
-        //             echo 'This is a step inside a script block'
-        //         }
-        //     }
-        // }
+        stage('No Image') {
+            steps {
+                echo 'Executing Job without Image'
+                sh 'echo ${helloWorld}'
+                sh 'cat /etc/os-release'
+                script {
+                    echo 'This is a step inside a script block'
+                    echo "${helloWorld}"
+                }
+            }
+        }
 
-        // stage('Docker Image') {
-        //     agent {
-        //         docker {
-        //             image 'alpine:latest'
-        //         }
-        //     }
-        //     steps {
-        //         echo 'Executing Job with docker image'
-        //         sh 'cat /etc/os-release'
-        //     }
-        // }
+        stage('Docker Image') {
+            agent {
+                docker {
+                    image 'alpine:latest'
+                }
+            }
+            steps {
+                echo 'Executing Job with docker image'
+                sh 'cat /etc/os-release'
+            }
+        } 
 
-        stage('Build and push image to DockerHub') {
+        stage('Build and push image to dockerHub') {
             environment {
-                registryName = "prajwalnl/test_images"
+                dockerHubRegistryName = "prajwalnl/aks_deploy_poc"
                 registryURL = "https://registry.hub.docker.com"
                 registryCredential = 'dockerhub-credential'        
             }
             steps {
                 script {
-                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
+                    dockerHubImage = docker.build dockerHubRegistryName + ":$BUILD_NUMBER"
                     docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-                    dockerImage.push()         // Push Docker image to Docker Hub
+                        dockerHubImage.push()       // Push Docker image to Docker Hub
                     }
                 }
             }
@@ -47,15 +49,15 @@ pipeline {
 
         stage('Build and push image to ACR') {
             environment {
-                registryName = "aksdeploypoc"
+                acrRegistryName = "aks_deploy_poc" 
                 registryURL = "https://aksdeploypoc.azurecr.io"
                 registryCredential = 'acr-cred'
             }
             steps {
                 script {
-                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile
-                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-                    dockerImage.push()         // Push Docker image to Docker Hub
+                    acrImage = docker.build acrRegistryName + ":$BUILD_NUMBER"
+                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with ACR
+                        acrImage.push()         // Push Docker image to ACR
                     }
                 }
             }
