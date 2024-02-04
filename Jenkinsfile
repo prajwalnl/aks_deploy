@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-                DOCKER_IMAGE_NAME = "test-image:${BUILD_NUMBER_TAG}"     
+                DOCKER_IMAGE_NAME = "test-image"    
             }
 
     stages {
@@ -32,24 +32,27 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build(DOCKER_IMAGE_NAME)
+                    dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER_TAG}"
+                    dockerImage = docker.build(dockerTag)
                 }
             }
         }
 
-        // stage('Push to DockerHub') {
-        //     environment {
-        //         registryCredential = credentials('dockerhub-credential')
-        //     }
-        //     steps {
-        //         script {
-        //             def dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER_TAG}"
-        //             docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
-        //                 dockerImage.push(dockerTag)
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Push to DockerHub') {
+            environment {
+                //registryName = "prajwalnl/test_images"
+                registryURL = "https://registry.hub.docker.com"
+                registryCredential = 'dockerhub-credential' 
+            }
+            steps {
+                script {
+                    def dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER_TAG}"
+                    docker.withRegistry(registryURL, registryCredential) {
+                        dockerImage.push(dockerTag)
+                    }
+                }
+            }
+        }
 
         // stage('Push image to DockerHub') {
         //     environment {
