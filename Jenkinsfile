@@ -36,7 +36,7 @@ pipeline {
             }
             steps {
                 script {
-                    dockerImage = docker.build "registry.hub.docker.com" + registry + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
+                    dockerImage = docker.build "registry.hub.docker.com" + registry + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile
                     docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {   // Authenticate with Docker Hub
                     dockerImage.push()         // Push Docker image to Docker Hub
                     }
@@ -52,7 +52,7 @@ pipeline {
             }
             steps {
                 script {
-                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
+                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile
                     docker.withRegistry( "https://${registryURL}", registryCredential ) {   // Authenticate with Docker Hub
                     dockerImage.push()         // Push Docker image to Docker Hub
                     }
