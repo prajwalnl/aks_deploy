@@ -13,26 +13,25 @@ pipeline {
                 script {
                     dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
                     DOCKER_IMAGE = docker.build(dockerTag) //dockerImage
-                    sh 'echo $DOCKER_IMAGE'
                 }
             }
         }
 
-        // stage('Push to DockerHub') {
-        //     environment {
-        //         //registryName = "prajwalnl/test_images"
-        //         registryURL = "https://registry.hub.docker.com"
-        //         registryCredential = 'dockerhub-credential' 
-        //     }
-        //     steps {
-        //         script {
-        //             def dockerTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
-        //             docker.withRegistry(registryURL, registryCredential) {
-        //                 DOCKER_IMAGE.push(dockerTag)  //
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Push to DockerHub') {
+            environment {
+                dockerRepoName = "prajwalnl/"
+                registryURL = "https://registry.hub.docker.com"
+                registryCredential = 'dockerhub-credential' 
+            }
+            steps {
+                script {
+                    def dockerTag = dockerRepoName + "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
+                    docker.withRegistry(registryURL, registryCredential) {
+                        DOCKER_IMAGE.push(dockerTag)  //
+                    }
+                }
+            }
+        }
 
         // stage('Push image to DockerHub') {
         //     environment {
