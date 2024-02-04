@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-                imageName = "test_image:${BUILD_NUMBER}"
                 dockerImage = ""      
             }
 
@@ -30,46 +29,37 @@ pipeline {
         //     }
         // }
 
-        stage('Build image') {
-            steps {
-                script {
-                    dockerImage = docker.build imageName    // Build Docker image using Dockerfile 
-                }
-            }
-        }
-
-        stage('Push image to DockerHub') {
+        stage('Build and push image to DockerHub') {
             environment {
                 registryName = "prajwalnl/aks_deploy_poc"
                 registryURL = "https://registry.hub.docker.com"
-                registryCredential = 'dockerhub-credential'       //credentials('dockerhub-credential') 
+                registryCredential = 'dockerhub-credential'        
             }
             steps {
                 script {
-                    sh ('docker tag ${imageName} ${registryName}:${BUILD_NUMBER}')
-                    testImage2 = docker.image('${registryName}:${BUILD_NUMBER}')
-                    sh ('echo $testImage2')
+                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile 
                     docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-                    testImage2.push()         // Push Docker image to Docker Hub
+                    dockerImage.push()         // Push Docker image to Docker Hub
                     }
                 }
             }
         }
 
-        // stage('Push image to ACR') {
-        //     environment {
-        //         registryName = "aksdeploypoc"
-        //         registryURL = "https://aksdeploypoc.azurecr.io"
-        //         registryCredential = 'acr-cred'
-        //     }
-        //     steps {
-        //         script {
-        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-        //             dockerImage.push()         // Push Docker image to Docker Hub
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Build and push image to ACR') {
+            environment {
+                registryName = "aksDeployPOC"
+                registryURL = "https://aksdeploypoc.azurecr.io"
+                registryCredential = 'acr-cred'
+            }
+            steps {
+                script {
+                    dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile
+                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
+                    dockerImage.push()         // Push Docker image to Docker Hub
+                    }
+                }
+            }
+        }
     }
 
     post {
