@@ -32,12 +32,13 @@ pipeline {
         stage('Build and push image to DockerHub') {
             environment {
                 registryName = "prajwalnl/test_images"
-                registryCredential = 'dockerhub-credential'        
+                registryURL = "https://registry.hub.docker.com"
+                registryCredential = 'dockerhub-credential'
             }
             steps {
                 script {
-                    dockerImage = docker.build "registry.hub.docker.com" + registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile
-                    docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {   // Authenticate with Docker Hub
+                    dockerImage = docker.build "registry.hub.docker.com/" + registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile
+                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
                     dockerImage.push()         // Push Docker image to Docker Hub
                     }
                 }
@@ -47,13 +48,13 @@ pipeline {
         stage('Build and push image to ACR') {
             environment {
                 registryName = "aksdeploypoc"
-                registryURL = "aksdeploypoc.azurecr.io"
-                registryCredential = 'acr-cred'        
+                registryURL = "https://aksdeploypoc.azurecr.io"
+                registryCredential = 'acr-cred'
             }
             steps {
                 script {
                     dockerImage = docker.build registryName + ":$BUILD_NUMBER"       // Build Docker image using Dockerfile
-                    docker.withRegistry( "https://${registryURL}", registryCredential ) {   // Authenticate with Docker Hub
+                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
                     dockerImage.push()         // Push Docker image to Docker Hub
                     }
                 }
