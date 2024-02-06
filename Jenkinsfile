@@ -7,21 +7,36 @@ pipeline {
 
     stages {
 
+        // stage('Deploy to Kubernetes') {
+        //     steps {
+        //         withCredentials([azureServicePrincipal(credentialsId: 'your-credentials-id', tenantId: 'your-tenant-id', clientId: 'your-client-id', clientSecret: 'your-client-secret')]) {
+        //             echo 'Logging in to Azure using Azure CLI...'
+        //             sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID'
+        //             echo 'Applying Kubernetes configuration using kubectl...'
+        //             sh 'az account show'
+        //             sh 'az account list'
+        //             sh 'kubectl config get-contexts'
+        //             //sh 'kubectl apply -f your-kubernetes-config.yaml'
+        //         }
+        //     }
+        // }
+
+        stage('Copy Password File') {
+            steps {
+                // Copy the password file from credential to Jenkins workspace
+                withCredentials([file(credentialsId: 'file', variable: 'PASSWORD_FILE')]) {
+                    sh 'echo "file content---------------------------------------------------------------------------------------'
+                    sh 'cat $PASSWORD_FILE'
+                }
+            }
+        }
+
         stage('No Image') {
             steps {
                 echo 'Executing Job without Image'
                 sh 'echo ${helloWorld}'
-                dir('/') {
-                    // Run commands or perform actions in the root directory
-                    //sh 'pwd'
-                    sh 'ls -l'
-                    // Add more commands as needed
-                    sh 'ls -a'
-                    sh 'cat /.kube/confg'
-                } 
-                sh 'helm'
-                sh 'kubectl'
-                sh 'az version'
+                sh 'echo "Username: $(whoami)"'
+                sh 'echo "Hostname: $(hostname)"'
                 sh 'az account show'
                 sh 'az account list'
                 sh 'kubectl config get-contexts'
