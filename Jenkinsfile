@@ -13,7 +13,7 @@ pipeline {
                 sh 'echo ${helloWorld}'
                 dir('/') {
                     // Run commands or perform actions in the root directory
-                    sh 'pwd'
+                    //sh 'pwd'
                     sh 'ls -l'
                     // Add more commands as needed
                     sh 'ls -a'
