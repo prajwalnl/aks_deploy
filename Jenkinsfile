@@ -21,12 +21,13 @@ pipeline {
         //     }
         // }
 
-        stage('Copy Password File') {
+        stage('Read Credentials File') {
             steps {
-                // Copy the password file from credential to Jenkins workspace
-                withCredentials([file(credentialsId: 'file', variable: 'PASSWORD_FILE')]) {
-                    sh 'echo "file content---------------------------------------------------------------------------------------'
-                    sh 'cat $PASSWORD_FILE'
+                withCredentials([file(credentialsId: 'file', variable: 'CREDENTIALS_FILE')]) {
+                    script {
+                        def credentialsContent = readFile(file: "$CREDENTIALS_FILE")
+                        echo "Credentials File Content: $credentialsContent"
+                    }
                 }
             }
         }
