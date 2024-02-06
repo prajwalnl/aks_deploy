@@ -14,9 +14,10 @@ pipeline {
                 sh 'helm'
                 sh 'kubectl'
                 sh 'az version'
-                sh 'kubectl get deployments --all-namespaces=true'
                 sh 'az account show'
                 sh 'az account list'
+                sh 'kubectl config get-contexts'
+                sh 'kubectl get deployments --all-namespaces=true'
                 script {
                     echo 'This is a step inside a script block'
                     echo "${helloWorld}"
