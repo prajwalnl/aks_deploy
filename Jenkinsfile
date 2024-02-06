@@ -7,31 +7,6 @@ pipeline {
 
     stages {
 
-        // stage('Deploy to Kubernetes') {
-        //     steps {
-        //         withCredentials([azureServicePrincipal(credentialsId: 'your-credentials-id', tenantId: 'your-tenant-id', clientId: 'your-client-id', clientSecret: 'your-client-secret')]) {
-        //             echo 'Logging in to Azure using Azure CLI...'
-        //             sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID'
-        //             echo 'Applying Kubernetes configuration using kubectl...'
-        //             sh 'az account show'
-        //             sh 'az account list'
-        //             sh 'kubectl config get-contexts'
-        //             //sh 'kubectl apply -f your-kubernetes-config.yaml'
-        //         }
-        //     }
-        // }
-
-        stage('Read Credentials File') {
-            steps {
-                withCredentials([file(credentialsId: 'file', variable: 'CREDENTIALS_FILE')]) {
-                    script {
-                        def credentialsContent = readFile(file: "$CREDENTIALS_FILE")
-                        echo "Credentials File Content: $credentialsContent"
-                    }
-                }
-            }
-        }
-
         stage('No Image') {
             steps {
                 echo 'Executing Job without Image'
@@ -49,6 +24,40 @@ pipeline {
             }
         }
 
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'az account show'
+                sh 'az account list'
+                sh 'kubectl config get-contexts'
+                sh 'kubectl apply -f aks-store-quickstart.yaml'
+            }
+        }
+
+        // stage('Azure Operations') {
+        //     steps {
+        //         withCredentials([azureServicePrincipal(credentialsId: 'your-credentials-id', tenantId: 'your-tenant-id', clientId: 'your-client-id', clientSecret: 'your-client-secret')]) {
+        //             sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID'
+        //             sh 'az account list'
+        //             sh 'az logout'
+        //         }
+        //     }
+        // }
+
+        // stage('Deploy to Kubernetes') {
+        //     steps {
+        //         withCredentials([azureServicePrincipal(credentialsId: 'your-credentials-id', tenantId: 'your-tenant-id', clientId: 'your-client-id', clientSecret: 'your-client-secret')]) {
+        //             echo 'Logging in to Azure using Azure CLI...'
+        //             sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID'
+        //             echo 'Applying Kubernetes configuration using kubectl...'
+        //             sh 'az account show'
+        //             sh 'az account list'
+        //             sh 'kubectl config get-contexts'
+        //             //sh 'kubectl apply -f your-kubernetes-config.yaml'
+        //         }
+        //     }
+        // }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //     stage('No Image') {
     //         steps {
     //             echo 'Executing Job without Image'
@@ -60,6 +69,17 @@ pipeline {
     //             }
     //         }
     //     }
+
+        // stage('Read Credentials File') {
+        //         steps {
+        //             withCredentials([file(credentialsId: 'file', variable: 'CREDENTIALS_FILE')]) {
+        //                 script {
+        //                     def credentialsContent = readFile(file: "$CREDENTIALS_FILE")
+        //                     echo "Credentials File Content: $credentialsContent"
+        //                 }
+        //             }
+        //         }
+        //     }
 
     //     stage('Docker Image') {
     //         agent {
