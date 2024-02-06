@@ -11,11 +11,14 @@ pipeline {
             steps {
                 echo 'Executing Job without Image'
                 sh 'echo ${helloWorld}'
+                sh 'ls -a'
+                sh 'cat /.kube/confg'
                 sh 'helm'
                 sh 'kubectl'
                 sh 'az version'
                 sh 'az account show'
                 sh 'az account list'
+
                 sh 'kubectl config get-contexts'
                 sh 'kubectl get deployments --all-namespaces=true'
                 script {
