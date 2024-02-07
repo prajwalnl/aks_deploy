@@ -80,7 +80,7 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 #Use Jenkins pipeline build to deploy to k8s cluster
-    - kubectl apply -f aks-store-quickstart.yaml
+    kubectl apply -f aks-store-quickstart.yaml
 		
 --------------------------------------------------------------------------------------------------------------------------------
 #In Ubuntu jenkins user, Get external IP to access app in k8s cluster
