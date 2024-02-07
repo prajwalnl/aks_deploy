@@ -5,15 +5,24 @@
 #Install jenkins in ubuntu
 
 #Start jenkins server
-	service jenkins start        (Options: stop,restart )
+	sudo service jenkins start        (Options: stop,restart )
 	
 #Setup and login into jenkins using chrome at port 8080
 
-#Install Jenkins plugins (Github, kubectl and docker)                     ///////check and list
+#Install Jenkins plugins
+    - GitHub Branch Source Plugin
+    - Pipeline: GitHub Groovy Libraries
+    - Kuberenetes CLI Plugin 
+    - Docker Pipeline
+
+#Add credentials (username and password for docker,acr??,
+    - Docker
+    - Azure CR
+    - Github PAT for git SCM
+    - sample credentials file 
 
 #Create a new multibranch pipeline 
 	add source as github repo url and setup scm
-	add credentials (username and password for docker,acr??,(PAT)                 (credentials: PAT and ssh key) // check and update
 	
 #Start ngrok tunnel of jenkins
 	ngrok port 8080
@@ -34,12 +43,6 @@
 #As jenkins user setup azure resource group, k8s cluster and container registry.
 		#login to azure through cli
 			az login --use-device-code    // and login through browser
-	
-	    #Get aks credentials in  /var/lib/jenkins/.kube/config
-			az aks get-credentials --resource-group aks_deploy --name aksdeployk8s --overwrite-existing
-			
-		#Verify aks credentials in /var/lib/jenkins/.kube/config
-			cat /var/lib/jenkins/.kube/config
 		
 		# Create Resource Group
 			az group create --location centralus --name aks_deploy
@@ -53,6 +56,12 @@
 		#Providing required permission for downloading Docker image from ACR into AKS Cluster
 			az aks update -n aksdeployk8s -g aks_deploy --attach-acr aksdeploypoc
 
+        #Get aks credentials in  /var/lib/jenkins/.kube/config
+			az aks get-credentials --resource-group aks_deploy --name aksdeployk8s --overwrite-existing
+			
+		#Verify aks credentials in /var/lib/jenkins/.kube/config
+			cat /var/lib/jenkins/.kube/config
+
 		#Create k8s namespace
 			kubectl create namespace mcr-app-deployment
 
@@ -62,6 +71,7 @@
 		#kubectl commands for debug or info
 			kubectl get nodes  										//Check nodes
 			kubectl config get-contexts 							//Get k8s contexts
+            kubectl get namespace                                   //Get list of namespaces
 			kubectl get deployments --all-namespaces=true			//Get deployments in all namespaces
 			kubectl get deployments --namespace mcr-app-deployment	//Get deployments in specific namespace
 		
