@@ -7,13 +7,6 @@ pipeline {
 
     stages {
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh 'kubectl apply -f aks-store-quickstart.yaml'
-            }
-        }
-    }
-
         // stage('Azure Operations') {
         //     steps {
         //         withCredentials([azureServicePrincipal(credentialsId: 'your-credentials-id', tenantId: 'your-tenant-id', clientId: 'your-client-id', clientSecret: 'your-client-secret')]) {
@@ -40,79 +33,86 @@ pipeline {
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // stage('No Image') {
+        stage('No Image') {
+            steps {
+                echo 'Executing Job without Image'
+                sh 'echo ${helloWorld}'
+                sh 'cat /etc/os-release'
+                script {
+                    echo 'This is a step inside a script block'
+                    echo "${helloWorld}"
+                }
+            }
+        }
+
+            stage('Read Credentials File') {
+                    steps {
+                        withCredentials([file(credentialsId: 'file', variable: 'CREDENTIALS_FILE')]) {
+                            script {
+                                def credentialsContent = readFile(file: "$CREDENTIALS_FILE")
+                                echo "Credentials File Content: $credentialsContent"
+                            }
+                        }
+                    }
+                }
+
+        stage('Docker Image') {
+            agent {
+                docker {
+                    image 'alpine:latest'
+                }
+            }
+            steps {
+                echo 'Executing Job with docker image'
+                sh 'cat /etc/os-release'
+            }
+        } 
+
+        stage('Build and push image to dockerHub') {
+            environment {
+                dockerHubRegistryName = "prajwalnl/aks_deploy_poc"
+                registryURL = "https://registry.hub.docker.com"
+                registryCredential = 'dockerhub-credential'        
+            }
+            steps {
+                script {
+                    dockerHubImage = docker.build dockerHubRegistryName + ":$BUILD_NUMBER"
+                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
+                        dockerHubImage.push()       // Push Docker image to Docker Hub
+                    }
+                }
+            }
+        }
+
+        stage('Build and push image to ACR') {
+            environment {
+                acrRegistryName = "aksdeploypoc"
+                registryURL = "https://aksdeploypoc.azurecr.io"
+                registryCredential = 'acr-cred'
+            }
+            steps {
+                script {
+                    acrImage = docker.build acrRegistryName + ":$BUILD_NUMBER"
+                    docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with ACR
+                        acrImage.push()         // Push Docker image to ACR
+                    }
+                }
+            }
+        }
+
+        // stage('Deploy to Kubernetes') {
         //     steps {
-        //         echo 'Executing Job without Image'
-        //         sh 'echo ${helloWorld}'
-        //         sh 'cat /etc/os-release'
-        //         script {
-        //             echo 'This is a step inside a script block'
-        //             echo "${helloWorld}"
-        //         }
+        //         sh 'kubectl apply -f aks-store-quickstart.yaml'
         //     }
         // }
-
-        //     stage('Read Credentials File') {
-        //             steps {
-        //                 withCredentials([file(credentialsId: 'file', variable: 'CREDENTIALS_FILE')]) {
-        //                     script {
-        //                         def credentialsContent = readFile(file: "$CREDENTIALS_FILE")
-        //                         echo "Credentials File Content: $credentialsContent"
-        //                     }
-        //                 }
-        //             }
-        //         }
-
-        // stage('Docker Image') {
-        //     agent {
-        //         docker {
-        //             image 'alpine:latest'
-        //         }
-        //     }
-        //     steps {
-        //         echo 'Executing Job with docker image'
-        //         sh 'cat /etc/os-release'
-        //     }
-        // } 
-
-        // stage('Build and push image to dockerHub') {
-        //     environment {
-        //         dockerHubRegistryName = "prajwalnl/aks_deploy_poc"
-        //         registryURL = "https://registry.hub.docker.com"
-        //         registryCredential = 'dockerhub-credential'        
-        //     }
-        //     steps {
-        //         script {
-        //             dockerHubImage = docker.build dockerHubRegistryName + ":$BUILD_NUMBER"
-        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-        //                 dockerHubImage.push()       // Push Docker image to Docker Hub
-        //             }
-        //         }
-        //     }
-        // }
-
-        // stage('Build and push image to ACR') {
-        //     environment {
-        //         acrRegistryName = "aksdeploypoc"
-        //         registryURL = "https://aksdeploypoc.azurecr.io"
-        //         registryCredential = 'acr-cred'
-        //     }
-        //     steps {
-        //         script {
-        //             acrImage = docker.build acrRegistryName + ":$BUILD_NUMBER"
-        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with ACR
-        //                 acrImage.push()         // Push Docker image to ACR
-        //             }
-        //         }
-        //     }
-        // }
+    }
 
     post {
         always {
             // Clean up Docker images, containers and workspace.
             script {
-                //sh 'docker rmi -f $(docker images -q)'
-                //sh 'docker system prune -f'
+                sh 'docker rmi -f $(docker images -q)'
+                sh 'docker system prune -f'
                 deleteDir()
             }   
         }
