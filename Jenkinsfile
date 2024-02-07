@@ -24,14 +24,14 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh 'az account show'
-                sh 'az account list'
-                sh 'kubectl config get-contexts'
-                sh 'kubectl apply -f aks-store-quickstart.yaml'
-            }
-        }
+        // stage('Deploy to Kubernetes') {
+        //     steps {
+        //         sh 'az account show'
+        //         sh 'az account list'
+        //         sh 'kubectl config get-contexts'
+        //         sh 'kubectl apply -f aks-store-quickstart.yaml'
+        //     }
+        // }
 
         // stage('Azure Operations') {
         //     steps {
