@@ -7,31 +7,11 @@ pipeline {
 
     stages {
 
-        stage('No Image') {
+        stage('Deploy to Kubernetes') {
             steps {
-                echo 'Executing Job without Image'
-                sh 'echo ${helloWorld}'
-                sh 'echo "Username: $(whoami)"'
-                sh 'echo "Hostname: $(hostname)"'
-                sh 'az account show'
-                sh 'az account list'
-                sh 'kubectl config get-contexts'
-                sh 'kubectl get deployments --all-namespaces=true'
-                script {
-                    echo 'This is a step inside a script block'
-                    echo "${helloWorld}"
-                }
+                sh 'kubectl apply -f aks-store-quickstart.yaml'
             }
         }
-
-        // stage('Deploy to Kubernetes') {
-        //     steps {
-        //         sh 'az account show'
-        //         sh 'az account list'
-        //         sh 'kubectl config get-contexts'
-        //         sh 'kubectl apply -f aks-store-quickstart.yaml'
-        //     }
-        // }
 
         // stage('Azure Operations') {
         //     steps {
@@ -126,20 +106,20 @@ pipeline {
     //     }
     // }
 
-    // post {
-    //     always {
-    //         // Clean up Docker images, containers and workspace.
-    //         script {
-    //             sh 'docker rmi -f $(docker images -q)'
-    //             sh 'docker system prune -f'
-    //             deleteDir()
-    //         }   
-    //     }
-    //     success {
-    //         echo 'This runs only if the pipeline is successful'
-    //     }
-    //     failure {
-    //         echo 'This runs only if the pipeline fails'
-    //     }
+    post {
+        always {
+            // Clean up Docker images, containers and workspace.
+            script {
+                //sh 'docker rmi -f $(docker images -q)'
+                //sh 'docker system prune -f'
+                deleteDir()
+            }   
+        }
+        success {
+            echo 'This runs only if the pipeline is successful'
+        }
+        failure {
+            echo 'This runs only if the pipeline fails'
+        }
     }
 }
