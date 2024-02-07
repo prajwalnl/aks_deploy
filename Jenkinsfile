@@ -12,7 +12,7 @@ pipeline {
                 script{
                     sh 'ls'
                     sh 'touch Demo.txt'
-                    sh 'echo Hello>>Demo.txt'
+                    sh 'echo "Build number:${BUILD_NUMBER}" >> Demo.txt'
                     sh 'ls'
                 }   
             }
@@ -107,9 +107,7 @@ pipeline {
 
     post {
         always {
-            archive "Demo.txt"
-            stash includes: 'Demo.txt', name: 'debugBuiltArtifacts'
-            //archiveArtifacts artifacts: 'Demo.txt', fingerprint: true
+            archiveArtifacts artifacts: 'Demo.txt', fingerprint: true
             
             // Clean up Docker images, containers and workspace.
             script {
