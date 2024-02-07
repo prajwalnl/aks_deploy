@@ -10,11 +10,8 @@ pipeline {
         stage('File artifact') {
             steps {
                 script{
-                    sh 'ls'
                     sh 'touch Demo.txt'
-                    sh 'echo "Build number:${BUILD_NUMBER}" >> Demo.txt'
-                    sh 'ls'
-                    archiveArtifacts artifacts: 'Demo.txt'  //, fingerprint: true, excludes: 'output/*.md'            
+                    sh 'echo "Build number:${BUILD_NUMBER}" >> Demo.txt'           
                 }   
             }
         }
@@ -108,6 +105,8 @@ pipeline {
 
     post {
         always {
+            archiveArtifacts artifacts: 'Demo.txt'  //, fingerprint: true, excludes: 'output/*.md' 
+            
             // Clean up Docker images, containers and workspace.
             script {
                 //sh 'docker rmi -f $(docker images -q)'
