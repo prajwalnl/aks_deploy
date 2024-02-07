@@ -6,29 +6,37 @@ pipeline {
             }
 
     stages {
-
-        stage('File artifact') {
+        stage('Azure Login and List Accounts ---- Deploy to Kubernetes') {
             steps {
-                script{
-                    sh 'touch Demo.txt'
-                    sh 'echo "Build number:${BUILD_NUMBER}" >> Demo.txt'           
-                }   
+                withCredentials([azureServicePrincipal(credentialsId: 'your-credentials-id', tenantId: 'your-tenant-id', clientId: 'your-client-id', clientSecret: 'your-client-secret')]) {
+                    script {
+                        sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID'
+                        sh 'az account list'
+                        //sh 'kubectl apply -f your-kubernetes-config.yaml'
+                    }
+                }
             }
         }
 
-        // stage('Deploy to Kubernetes') {
+        // stage('Build and push image to ACR') {
+        //     environment {
+        //         acrRegistryName = "aksdeploypoc"
+        //         registryURL = "https://aksdeploypoc.azurecr.io"
+        //         registryCredential = 'acr-cred'
+        //     }
         //     steps {
-        //         withCredentials([azureServicePrincipal(credentialsId: 'your-credentials-id', tenantId: 'your-tenant-id', clientId: 'your-client-id', clientSecret: 'your-client-secret')]) {
-        //             sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID'
-        //             sh 'az account list'
-        //             //sh 'kubectl apply -f your-kubernetes-config.yaml'
+        //         script {
+        //             acrImage = docker.build acrRegistryName + ":$BUILD_NUMBER"
+        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with ACR
+        //                 acrImage.push()         // Push Docker image to ACR
+        //             }
         //         }
         //     }
         // }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // stage('No Image') {
+        // stage('No Image and build downloadable artifact') {
         //     steps {
         //         echo 'Executing Job without Image'
         //         sh 'echo ${helloWorld}'
@@ -36,6 +44,8 @@ pipeline {
         //         script {
         //             echo 'This is a step inside a script block'
         //             echo "${helloWorld}"
+        //             sh 'touch Demo.txt'
+        //             sh 'echo "Build number:${BUILD_NUMBER}" >> Demo.txt'           
         //         }
         //     }
         // }
@@ -105,7 +115,8 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'Demo.txt'  //, fingerprint: true, excludes: 'output/*.md' 
+            //Create build artifact.
+            //archiveArtifacts artifacts: 'Demo.txt'  //, fingerprint: true, excludes: 'output/*.md' 
             
             // Clean up Docker images, containers and workspace.
             script {

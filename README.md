@@ -96,6 +96,7 @@
 		az logout
 		
 #Verify /var/lib/jenkins/.kube/config file is deleted
+    rm -rf /var/lib/jenkins/.kube/
 
 #Stop ngrok terminal CNTRL+C
 
