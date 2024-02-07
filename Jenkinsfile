@@ -14,6 +14,7 @@ pipeline {
                     sh 'touch Demo.txt'
                     sh 'echo "Build number:${BUILD_NUMBER}" >> Demo.txt'
                     sh 'ls'
+                    archiveArtifacts artifacts: 'Demo.txt'  //, fingerprint: true, excludes: 'output/*.md'            
                 }   
             }
         }
@@ -107,12 +108,10 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'Demo.txt', fingerprint: true
-            
             // Clean up Docker images, containers and workspace.
             script {
-                sh 'docker rmi -f $(docker images -q)'
-                sh 'docker system prune -f'
+                //sh 'docker rmi -f $(docker images -q)'
+                //sh 'docker system prune -f'
                 deleteDir()
             }   
         }
