@@ -115,13 +115,6 @@ pipeline {
                 sh 'docker system prune -f'
                 deleteDir()
             }   
-
-
-            /////cleanup for azure resource creation
-
-            main to start to last automated
-            demo branch
-            resource creation branch
         }
         success {
             echo 'This runs only if the pipeline is successful'

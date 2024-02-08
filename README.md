@@ -47,17 +47,21 @@
 		# Create Resource Group
 			az group create --location centralus --name aks_deploy
 
-		#Create Azure service principal with Contributor role in created azure resource group
+		#Create Azure service principal with Contributor role in created azure resource group store the output somewhere safe
 			az ad sp create-for-rbac --name aksdeployServicePrincipal --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/aks_deploy
 
-		#Update Azure service principal in Jenkins credentials. (use type azure service principal)
+		#Update Azure service principal in Jenkins credentials. 
+			Install azure credentials plugin-in in jenkins. 
+
+			While creating select type "azure service principal"
+
 			#Get from output of previous command
 				Subscription ID: 	Your Azure subscription ID.
 				Client ID: 			"appId"
 				Client Secred: 		"password"
 				Tenant ID: 			"tenant"
 			
-#Run "create-azure-resource" brannh build in Jenkins to create following resources.
+#Run "create-azure-resource" branch build in Jenkins to create following resources.
 	- AKS cluster with 2 nodes.
 	- Azure container registry.
 	- Link ACR to AKS.
@@ -102,3 +106,11 @@
 
 #Stop Jenkins service
 	sudo service jenkins stop
+
+
+
+	            /////cleanup for azure resource creation
+
+            main to start to last automated
+            demo branch
+            resource creation branch
