@@ -6,17 +6,28 @@ pipeline {
             }
 
     stages {
-        stage('Azure Login and List Accounts ---- Deploy to Kubernetes') {
-            steps {
-                withCredentials([azureServicePrincipal(credentialsId: 'your-credentials-id', tenantId: 'your-tenant-id', clientId: 'your-client-id', clientSecret: 'your-client-secret')]) {
-                    script {
-                        sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID'
-                        sh 'az account list'
-                        //sh 'kubectl apply -f your-kubernetes-config.yaml'
+        stage('Azure Login and List Accounts') {
+                steps {
+                    withCredentials([azureServicePrincipal('credentials_id')]) {
+                        script {
+                            sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                            sh 'az account list'
+                        }
                     }
                 }
             }
-        }
+
+        // stage('Azure Login and List Accounts ---- detailed') {
+        //     steps {
+        //         withCredentials([azureServicePrincipal(credentialsId: 'your-credentials-id', tenantId: 'your-tenant-id', clientId: 'your-client-id', clientSecret: 'your-client-secret')]) {
+        //             script {
+        //                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID'
+        //                 sh 'az account list'
+        //                 //sh 'kubectl apply -f your-kubernetes-config.yaml'
+        //             }
+        //         }
+        //     }
+        // }
 
         // stage('Build and push image to ACR') {
         //     environment {

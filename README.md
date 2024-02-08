@@ -53,7 +53,7 @@
 		# Create Azure Container Registry
 			az acr create --resource-group aks_deploy --name aksdeploypoc --sku Standard --location centralus
 
-        #Update azure container registry credential in jenkins                                                  ###remove if az ad sp works
+        #Update azure container registry credential in jenkins             ###remove if az ad sp works
 
 		#Providing required permission for downloading Docker image from ACR into AKS Cluster
 			az aks update -n aksdeployk8s -g aks_deploy --attach-acr aksdeploypoc
