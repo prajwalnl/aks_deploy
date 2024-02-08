@@ -23,10 +23,10 @@ pipeline {
                             sh './create_azure_setup.sh'
                             sh "docker build -t aksdeploypocimage ."
 
-                            sh "docker tag aksdeploypocimage $ACR_NAME.azurecr.io/aksdeploypocimage:latest"
+                            sh "docker tag aksdeploypocimage aksdeploypoc.azurecr.io/aksdeploypocimage:latest"
 
                             // Push Docker image to Azure Container Registry
-                            sh "docker push $ACR_NAME.azurecr.io/aksdeploypocimage:latest"
+                            sh "docker push aksdeploypoc.azurecr.io/aksdeploypocimage:latest"
                         }
                     }
                 }
