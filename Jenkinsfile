@@ -2,7 +2,9 @@ pipeline {
     agent any
 
     environment {
-                helloWorld = "Hello World!"   
+                helloWorld = "Hello World!"
+                ACR_NAME = 'aksdeploypoc'
+                DOCKER_IMAGE_NAME = 'aksdeploypocimage'  
             }
 
     stages {
@@ -10,24 +12,22 @@ pipeline {
                 steps {
                     withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
                         script {
-                            sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                            sh 'az account list'
+                            //sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                            //sh 'az account list'
+                            
+                            // Log in to Azure Container Registry
+                            //sh "az acr login --name $ACR_NAME"
+
+                            // Build Docker image (replace with your Docker build command)
+                            sh './create_azure_setup.sh'
+                            sh "docker build -t $ACR_NAME.azurecr.io/$DOCKER_IMAGE_NAME:latest ."
+
+                            // Push Docker image to Azure Container Registry
+                            sh "docker push $ACR_NAME.azurecr.io/$DOCKER_IMAGE_NAME:latest"
                         }
                     }
                 }
             }
-
-        // stage('Azure Login and List Accounts ---- detailed') {
-        //     steps {
-        //         withCredentials([azureServicePrincipal(credentialsId: 'your-credentials-id', tenantId: 'your-tenant-id', clientId: 'your-client-id', clientSecret: 'your-client-secret')]) {
-        //             script {
-        //                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID'
-        //                 sh 'az account list'
-        //                 //sh 'kubectl apply -f your-kubernetes-config.yaml'
-        //             }
-        //         }
-        //     }
-        // }
 
         // stage('Build and push image to ACR') {
         //     environment {
