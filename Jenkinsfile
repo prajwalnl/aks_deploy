@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Azure Login and List Accounts') {
                 steps {
-                    withCredentials([azureServicePrincipal('credentials_id')]) {
+                    withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
                         script {
                             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                             sh 'az account list'
