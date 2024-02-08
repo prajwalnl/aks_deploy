@@ -17,9 +17,9 @@
 
 #Add credentials (username and password for docker,acr??,
     - Docker
-    - Azure CR //// replace wit az svc creds
-    - Github PAT for git SCM
-    - sample credentials file 
+    - Azure service principal
+    - Github PAT for git SCM 	(only for private repo's)
+    - sample credentials file with text "Hello"
 
 #Create a new multibranch pipeline 
 	add source as github repo url and setup scm
@@ -47,25 +47,24 @@
 		# Create Resource Group
 			az group create --location centralus --name aks_deploy
 
-		# Create AKS cluster with two worker nodes
-			az aks create --resource-group aks_deploy --name aksdeployk8s --node-count 2 --generate-ssh-keys
+		#Create Azure service principal with Contributor role in created azure resource group
+			az ad sp create-for-rbac --name aksdeployServicePrincipal --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/aks_deploy
 
-		# Create Azure Container Registry
-			az acr create --resource-group aks_deploy --name aksdeploypoc --sku Standard --location centralus
-
-        #Update azure container registry credential in jenkins             ###remove if az ad sp works
-
-		#Providing required permission for downloading Docker image from ACR into AKS Cluster
-			az aks update -n aksdeployk8s -g aks_deploy --attach-acr aksdeploypoc
-
-        #Get aks credentials in  /var/lib/jenkins/.kube/config
-			az aks get-credentials --resource-group aks_deploy --name aksdeployk8s --overwrite-existing
+		#Update Azure service principal in Jenkins credentials. (use type azure service principal)
+			#Get from output of previous command
+				Subscription ID: 	Your Azure subscription ID.
+				Client ID: 			"appId"
+				Client Secred: 		"password"
+				Tenant ID: 			"tenant"
 			
+#Run "create-azure-resource" brannh build in Jenkins to create following resources.
+	- AKS cluster with 2 nodes.
+	- Azure container registry.
+	- Link ACR to AKS.
+	- Create a namespace in k8s cluster.
+
 		#Verify aks credentials in /var/lib/jenkins/.kube/config
 			cat /var/lib/jenkins/.kube/config
-
-		#Create k8s namespace
-			kubectl create namespace mcr-app-deployment
 
         #Azure cli logged in accounts list
 			az account list
@@ -79,7 +78,8 @@
 		
 --------------------------------------------------------------------------------------------------------------------------------
 
-#Use Jenkins pipeline build to deploy to k8s cluster
+#Use Jenkins 'main' pipeline to run main workflow with below stages
+	-			<list stages>
     kubectl apply -f aks-store-quickstart.yaml
 		
 --------------------------------------------------------------------------------------------------------------------------------

@@ -8,47 +8,18 @@ pipeline {
             }
 
     stages {
-        stage('Azure Login and List Accounts') {
-                steps {
-                    withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
-                        script {
-                            //sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                            //sh 'az account list'
-                            
-                            // Log in to Azure Container Registry
-                            //sh "az acr login --name $ACR_NAME"
-
-                            // Build Docker image (replace with your Docker build command)
-                            sh 'chmod a+x create_azure_setup.sh'
-                            sh './create_azure_setup.sh'
-                            sh 'docker build -t aksdeploypocimage .'
-
-                            sh 'docker tag aksdeploypocimage aksdeploypoc.azurecr.io/aksdeploypocimage:latest'
-
-                            // Push Docker image to Azure Container Registry
-                            sh 'docker push aksdeploypoc.azurecr.io/aksdeploypocimage:latest'
-                        }
-                    }
-                }
-            }
-
-        // stage('Build and push image to ACR') {
-        //     environment {
-        //         acrRegistryName = "aksdeploypoc"
-        //         registryURL = "https://aksdeploypoc.azurecr.io"
-        //         registryCredential = 'acr-cred'
-        //     }
-        //     steps {
-        //         script {
-        //             acrImage = docker.build acrRegistryName + ":$BUILD_NUMBER"
-        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with ACR
-        //                 acrImage.push()         // Push Docker image to ACR
+        // stage('Azure resource creation') {
+        //         steps {
+        //             withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
+        //                 script {
+        //                     sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+        //                     sh 'az account list'
+        //                     sh 'chmod a+x create_azure_setup.sh'
+        //                     sh './create_azure_setup.sh'
+        //                 }
         //             }
         //         }
-        //     }
-        // }
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //     } 
 
         // stage('No Image and build downloadable artifact') {
         //     steps {
@@ -64,16 +35,25 @@ pipeline {
         //     }
         // }
 
-        //     stage('Read Credentials File') {
-        //             steps {
-        //                 withCredentials([file(credentialsId: 'file', variable: 'CREDENTIALS_FILE')]) {
-        //                     script {
-        //                         def credentialsContent = readFile(file: "$CREDENTIALS_FILE")
-        //                         echo "Credentials File Content: $credentialsContent"
-        //                     }
-        //                 }
+        // stage('Read Credentials File') {
+        //     steps {
+        //         withCredentials([file(credentialsId: 'file', variable: 'CREDENTIALS_FILE')]) {
+        //             script {
+        //                 def credentialsContent = readFile(file: "$CREDENTIALS_FILE")
+        //                 echo "Credentials File Content: $credentialsContent"
         //             }
         //         }
+        //     }
+        // }
+
+        // stage('Run Bash file') {
+        //     steps {
+        //         script {
+        //             sh 'chmod a+x demo_bash_script.sh'
+        //             sh './demo_bash_script.sh'
+        //         }   
+        //     }
+        // }
 
         // stage('Docker Image') {
         //     agent {
@@ -104,21 +84,18 @@ pipeline {
         //     }
         // }
 
-        // stage('Build and push image to ACR') {
-        //     environment {
-        //         acrRegistryName = "aksdeploypoc"
-        //         registryURL = "https://aksdeploypoc.azurecr.io"
-        //         registryCredential = 'acr-cred'
-        //     }
-        //     steps {
-        //         script {
-        //             acrImage = docker.build acrRegistryName + ":$BUILD_NUMBER"
-        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with ACR
-        //                 acrImage.push()         // Push Docker image to ACR
+        // stage('Azure Login and List Accounts') {
+        //         steps {
+        //             script {
+        //                 // Build Docker image 
+        //                 sh 'docker build -t aksdeploypocimage .'
+        //                 // Tag Docker image name
+        //                 sh 'docker tag aksdeploypocimage aksdeploypoc.azurecr.io/aksdeploypocimage:latest'
+        //                 // Push Docker image to Azure Container Registry
+        //                 sh 'docker push aksdeploypoc.azurecr.io/aksdeploypocimage:latest'
         //             }
         //         }
         //     }
-        // }
 
         // stage('Deploy to Kubernetes') {
         //     steps {
@@ -138,6 +115,13 @@ pipeline {
                 sh 'docker system prune -f'
                 deleteDir()
             }   
+
+
+            /////cleanup for azure resource creation
+
+            main to start to last automated
+            demo branch
+            resource creation branch
         }
         success {
             echo 'This runs only if the pipeline is successful'
