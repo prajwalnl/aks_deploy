@@ -21,12 +21,12 @@ pipeline {
                             // Build Docker image (replace with your Docker build command)
                             sh 'chmod a+x create_azure_setup.sh'
                             sh './create_azure_setup.sh'
-                            sh "docker build -t aksdeploypocimage ."
+                            sh 'docker build -t aksdeploypocimage .'
 
-                            sh "docker tag aksdeploypocimage aksdeploypoc.azurecr.io/aksdeploypocimage:latest"
+                            sh 'docker tag aksdeploypocimage aksdeploypoc.azurecr.io/aksdeploypocimage:latest'
 
                             // Push Docker image to Azure Container Registry
-                            sh "docker push aksdeploypoc.azurecr.io/aksdeploypocimage:latest"
+                            sh 'docker push aksdeploypoc.azurecr.io/aksdeploypocimage:latest'
                         }
                     }
                 }
