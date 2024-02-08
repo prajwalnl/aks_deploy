@@ -19,6 +19,7 @@ pipeline {
                             //sh "az acr login --name $ACR_NAME"
 
                             // Build Docker image (replace with your Docker build command)
+                            sh 'chmod a+x create_azure_setup.sh'
                             sh './create_azure_setup.sh'
                             sh "docker build -t $ACR_NAME.azurecr.io/$DOCKER_IMAGE_NAME:latest ."
 
@@ -131,8 +132,8 @@ pipeline {
             
             // Clean up Docker images, containers and workspace.
             script {
-                //sh 'docker rmi -f $(docker images -q)'
-                //sh 'docker system prune -f'
+                sh 'docker rmi -f $(docker images -q)'
+                sh 'docker system prune -f'
                 deleteDir()
             }   
         }
