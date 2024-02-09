@@ -115,8 +115,8 @@ pipeline {
             
             // Clean up Docker images, containers and workspace.
             script {
-                sh 'docker rmi -f $(docker images -q)'
-                sh 'docker system prune -f'
+                //sh 'docker rmi -f $(docker images -q)'
+                //sh 'docker system prune -f'
                 deleteDir()
             }   
         }
