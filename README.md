@@ -14,7 +14,15 @@
 # Pre-requistes
 1. Access to this Github repo ready with required files and k8s manifest file.
 
-2. Jenkins setup with below installed plugins, credentials and tools.
+2. Azure account with a active subscription.
+
+3. Below resources in Azure.
+	1. Azure resource group.
+	2. Azure service principal with contirbutor role for that resource group.
+	
+	Click [here](#azure-pre-requistes) to create both new.
+
+3. Jenkins setup with below installed plugins, credentials and tools.
 	1. **Plugins:**
 		- GitHub Branch Source Plugin
 		- Kuberenetes CLI Plugin 
@@ -22,7 +30,8 @@
 		- Azure credentials.
 
 	2. **Credentials:** Add below credentials in Jenkins credential manager.
-		- DockerHub registry. 
+		- DockerHub registry.
+		- Azure service principal. [help](#jenkins-azure-credentials)
 		- GitHub Personal access token (PAT) to trigger jenkins pipeline on github commit (only for private GitHub repo's)
 		- Sample credentials file with text "Hello"
 
@@ -62,32 +71,7 @@ ngrok port 8080
 
 2. Use Jenkins URL in
 	1. Setup Jenkins URL in GitHub repository webhook.
-	**Optional:** Setup Jenkins URL in VScode for pipeline lint. (With Jenkins pipeline lint plugin)
-
-> [!NOTE] Only for the first time, be cautious about creating resources in Azure.
-3. Create Azure resource group and Azure service principal to get azure credentials.
-	1. Run below command and follow instructions and login to your azure account.
-	```
-	az login --use-device-code
-	```
-	2. Create Resource Group
-	```
-	az group create --location centralus --name aks_deploy
-	```
-	3. Create Azure service principal using your subscription ID with Contributor role in created azure resource group store the output somewhere safe.
-	```
-	az ad sp create-for-rbac --name aksdeployServicePrincipal --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/aks_deploy
-	```
-	4. Create Azure service principal in Jenkins credentials. 
-		- Ensure Azure credentials plugin-in is installed in jenkins. 
-		- While creating select type "azure service principal"
-		- Fill credentials details from output of previous command
-			| Field | Value |
-			| - | - |
-			| Subscription ID |	Your Azure subscription ID |
-			| Client ID | appId |
-			| Client Secred | password |
-			| Tenant ID | tenant |
+	2. **Optional:** Setup Jenkins URL in VScode for pipeline lint. (With Jenkins pipeline lint plugin)
 
 
 > [!IMPORTANT] Make sure before running pipeline the file "create_azure_setup.sh" has only the below steps uncommented.
@@ -167,3 +151,38 @@ ngrok port 8080
 		```
 		kubectl get deployments --namespace mcr-app-deployment
 		```
+
+
+# Azure pre-requistes
+
+> [!NOTE] Be cautious about creating resources in Azure and delete all resources after use.
+
+Create a azure resource group and azure service principal with "Contributor" role for that resource group.
+
+1. Run below command and follow instructions and login to your azure account.
+```
+az login --use-device-code 
+```
+2. Create Resource Group.
+```
+az group create --location centralus --name <resource_group_name>
+```
+3. Create Azure service principal using your subscription ID with Contributor role in created azure resource group store the output somewhere safe.
+```
+az ad sp create-for-rbac --name aksdeployServicePrincipal --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/<resource_group_name>
+```
+
+
+
+# Jenkins-Azure credentials
+Create Azure service principal in Jenkins credentials.
+
+- Ensure Azure credentials plugin-in is installed in jenkins. 
+- While creating select **"Kind"** as **"Azure Service Principal"**.
+- Fill credentials details from output of previous command
+	| Field | Value |
+	| - | - |
+	| Subscription ID |	Your Azure subscription ID |
+	| Client ID | appId |
+	| Client Secred | password |
+	| Tenant ID | tenant |

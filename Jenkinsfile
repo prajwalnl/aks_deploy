@@ -14,8 +14,8 @@ pipeline {
         //                 script {
         //                     sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
         //                     sh 'az account list'
-        //                     sh 'chmod a+x create_azure_setup.sh'
-        //                     sh './create_azure_setup.sh'                  // Run except resource group creation.
+        //                     //sh 'chmod a+x create_azure_setup.sh'
+        //                     //sh './create_azure_setup.sh'                  // Run except resource group creation.
         //                 }
         //             }
         //         }
@@ -58,19 +58,31 @@ pipeline {
 
         //////////////////////////////////////////////////////////////////////////////////////
 
-        // stage('No Image and build downloadable artifact') {
+        // stage('No Image') {
         //     steps {
         //         echo 'Executing stage without docker image'
         //         sh 'echo ${helloWorld}'
         //         sh 'cat /etc/os-release'
         //         script {
         //             echo 'This is a step inside a script block'
-        //             echo "${helloWorld}"
-        //             sh 'touch Demo.txt'
-        //             sh 'echo "Build number:${BUILD_NUMBER}" >> Demo.txt'         
+        //             echo "${helloWorld}"         
         //         }
         //     }
         // }
+
+        stage('Multi script stage') {
+            steps {
+                script {
+                    //Run Bash file
+                    //Multiline script
+                    //create downloadable artifact "Demo.txt"
+                    sh '''
+                        chmod a+x demo_bash_script.sh
+                        ./demo_bash_script.sh
+                    '''
+                }   
+            }
+        }
 
         // stage('Use and read credentials file') {
         //     steps {
@@ -80,17 +92,6 @@ pipeline {
         //                 echo "Credentials File Content: $credentialsContent"
         //             }
         //         }
-        //     }
-        // }
-
-        // stage('Run Bash file-Multiline script') {
-        //     steps {
-        //         script {
-        //             sh '''
-        //                 chmod a+x demo_bash_script.sh
-        //                 ./demo_bash_script.sh
-        //             '''
-        //         }   
         //     }
         // }
 
@@ -110,7 +111,7 @@ pipeline {
     post {
         always {
             //Create build artifact.
-            //archiveArtifacts artifacts: 'Demo.txt'  //, fingerprint: true, excludes: 'output/*.md' 
+            archiveArtifacts artifacts: 'Demo.txt'  //, fingerprint: true, excludes: 'output/*.md' 
             
             // Clean up Docker images, containers and workspace.
             script {
