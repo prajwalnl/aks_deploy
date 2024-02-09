@@ -20,20 +20,20 @@
 	1. Azure resource group.
 	2. Azure service principal with a "Contributor" role for that resource group.
 
-	Click [here](#azure-pre-requistes) to create both new.
+		Click [here](#azure-pre-requistes) to create both new.
 
 3. Jenkins setup with below-installed plugins, credentials, and tools.
-	1. **Plugins:**
-		- GitHub Branch Source Plugin
-		- Kuberenetes CLI Plugin
-		- Docker Pipeline
-		- Azure credentials.
-
-	2. **Credentials:** Add the below credentials in Jenkins credential manager.
+	1. **Credentials:** Add the below credentials in Jenkins credential manager.
 		- DockerHub registry.
 		- Azure service principal. [help](#jenkins-azure-credentials)
 		- GitHub Personal access token (PAT) to trigger Jenkins pipeline on GitHub commit (only for private GitHub repos)
 		- Sample credentials file with the text "Hello"
+
+	2. **Plugins:**
+		- GitHub Branch Source Plugin
+		- Kuberenetes CLI Plugin
+		- Docker Pipeline
+		- Azure credentials.
 
 	3. **Tools:** Install the below tools in the Jenkins machine by logging in as "jenkins" user. (Enter password if asked)
 		```
@@ -65,8 +65,8 @@
 	</details>
 
 2. Use Jenkins URL in
-1. Set up Jenkins URL in GitHub repository webhook.
-2. **Optional:** Set up Jenkins URL in VScode for pipeline lint. (With Jenkins pipeline lint plugin)
+	1. Set up Jenkins URL in GitHub repository webhook.
+	2. **Optional:** Set up Jenkins URL in VScode for pipeline lint. (With Jenkins pipeline lint plugin)
 
 
 # Run Jenkins pipeline.
@@ -85,8 +85,13 @@
 	- Build and push images to Azure CR.
 	- Deploy to Kubernetes.
 
-3. The app will be installed in the cluster and accessed using the External IP of the cluster.
-	- **In the Jenkins machine log in as "jenkins" user.** (Refer to section "Pre-requisites" 2.3 )
+3. The app will be installed in the cluster and can be accessed using the External IP of the cluster.
+
+4. **In Jenkins machine**
+	- Login as "jenkins" user.
+		```
+		sudo su -s /bin/bash jenkins
+		```
 	- Get the external IP of the cluster.
 		```
 		kubectl get service store-front
@@ -96,7 +101,7 @@
 # Cleanup resources.
 1. Clean up resources in Azure by deleting the Azure resource group.
 	```
-	az group delete --name aks_deploy --yes --no-wait
+	az group delete --name <resource_group_name> --yes --no-wait
 	```
 2. Clear and log out from all resources.
 	- Delete AKS credentials
@@ -145,13 +150,14 @@
 		```
 	- Get deployments in specific namespace
 		```
-		kubectl get deployments --namespace mcr-app-deployment
+		kubectl get deployments --namespace <k8s-namespace-name>
 		```
 
 
 # Azure pre-requistes
 
-> [!NOTE] Be cautious about creating resources in Azure and delete all resources after use.
+> [!NOTE]
+> Be cautious about creating resources in Azure and delete all resources after use.
 
 Create an Azure resource group and Azure service principal with a "Contributor" role for that resource group.
 
@@ -163,15 +169,15 @@ Create an Azure resource group and Azure service principal with a "Contributor" 
 	```
 	az group create --location centralus --name <resource_group_name>
 	```
-3. Create an Azure service principal using your subscription ID with a "Contributor" role in the created Azure resource group. *** Store the output somewhere safe***.
+3. Create an Azure service principal using your subscription ID with a "Contributor" role in the created Azure resource group. ***Store the output somewhere safe***.
 	```
-	az ad sp create-for-rbac --name aksdeployServicePrincipal --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/<resource_group_name>
+	az ad sp create-for-rbac --name <servicePrincipalName> --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/<resource_group_name>
 	```
 
 # Jenkins-Azure credentials
-Create Azure service principal in Jenkins credentials.
+Create Azure credentials in Jenkins.
 
-- Ensure Azure credentials plugin-in is installed in Jenkins.
+- Ensure Azure credentials plugin is installed in Jenkins.
 - While creating select **"Kind"** as **"Azure Service Principal"**.
 - Fill in Azure service principal details.
 	| Field | Value |
