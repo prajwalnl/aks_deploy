@@ -10,6 +10,7 @@ pipeline {
     stages {
         // stage('Azure resource creation') {
         //         steps {
+        //             input 'Do you approve deployment?' 
         //             withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
         //                 script {
         //                     sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
@@ -72,6 +73,7 @@ pipeline {
 
         stage('Multi script stage') {
             steps {
+                input 'Do you approve deployment?'
                 script {
                     //Run Bash file
                     //Multiline script

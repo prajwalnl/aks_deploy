@@ -156,7 +156,7 @@
 
 # Azure pre-requistes
 
-> [!NOTE]
+> [!WARNING] 
 > Be cautious about creating resources in Azure and delete all resources after use.
 
 Create an Azure resource group and Azure service principal with a "Contributor" role for that resource group.
