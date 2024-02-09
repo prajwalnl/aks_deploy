@@ -1,116 +1,162 @@
-#Github repo ready with dockerfile and k8s manifest file
+# This project helps to do the below workflow:
 
-#Open ubuntu
+1. Code push to GitHub.
 
-#Install jenkins in ubuntu
+2. Trigger pipeline in Jenkins.
 
-#Start jenkins server
-	sudo service jenkins start        (Options: stop,restart )
+3. Create Azure container registry (ACR) and AKS cluster in a existing resource group.
+
+4. Build docker image and push to DockerHub and Azure container registry.
+
+5. Deploy to azure AKS cluster.
+
+
+# Pre-requistes
+1. Access to this Github repo ready with required files and k8s manifest file.
+
+2. Jenkins setup with below installed plugins, credentials and tools.
+	1. **Plugins:**
+		- GitHub Branch Source Plugin
+		- Kuberenetes CLI Plugin 
+		- Docker Pipeline
+
+	2. **Credentials:** Add below credentials in Jenkins credential manager.
+		- DockerHub registry.
+		- Azure service principal   	###link how to create azure svc principal
+		- GitHub Personal access token (PAT) to trigger jenkins pipeline on github commit (only for private GitHub repo's)
+		- Sample credentials file with text "Hello"
+
+	3. **Tools:** Install below tools in jenkins machine by loging in as jenkins user. (Enter password if asked)
+		```
+		sudo su -s /bin/bash jenkins
+		```
+		- docker
+		- helm
+		- kubectl
+		- Azure CLI
+
+3. Create a new multibranch pipeline in Jenkins add source as GitHub repo URL and setup auto trigger for all branches. (Use GitHub PAT if repo is private)
+
+
+# Steps to setup the project:
+
+1. Verify jenkins is running or else start it. (Options: start,stop,restart)
+	```
+	sudo service jenkins start
+	```
+	<details>
+	<summary>Expand if you are running Jenkins in local port.</summary>
 	
-#Setup and login into jenkins using chrome at port 8080
-
-#Install Jenkins plugins
-    - GitHub Branch Source Plugin
-    - Pipeline: GitHub Groovy Libraries
-    - Kuberenetes CLI Plugin 
-    - Docker Pipeline
-
-#Add credentials (username and password for docker,acr??,
-    - Docker
-    - Azure service principal
-    - Github PAT for git SCM 	(only for private repo's)
-    - sample credentials file with text "Hello"
-
-#Create a new multibranch pipeline 
-	add source as github repo url and setup scm
-	
-#Start ngrok tunnel of jenkins
+	#### Install "ngrok" and run below command with your jenkins port to get public URL for Jenkins
+	```
 	ngrok port 8080
-	
-#Copy the ngrok URL from terminal and open it in win chrome and login
+	```
+	- Copy the ngrok URL from terminal and open it in browser and login.
+	- This will be our public Jenkins URL.
+	</details>		
 
-#Setup Jenkins URL in vscode
+2. Use Jenkins URL in
+	1. Setup Jenkins URL in GitHub repository webhook.
+	**Optional:** Setup Jenkins URL in VScode for pipeline lint. (With Jenkins pipeline lint plugin)
 
-#Setup Jenkins URL in github repo webhook.
+> [!NOTE] Only for the first time, be cautious about creating resources in Azure.
+3. Create Azure resource group and Azure service principal to get azure credentials.
+	1. Run below command and follow instructions and login to your azure account.
+	```
+	az login --use-device-code
+	```
+	2. Create Resource Group
+	```
+	az group create --location centralus --name aks_deploy
+	```
+	3. Create Azure service principal using your subscription ID with Contributor role in created azure resource group store the output somewhere safe.
+	```
+	az ad sp create-for-rbac --name aksdeployServicePrincipal --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/aks_deploy
+	```
+	4. Create Azure service principal in Jenkins credentials. 
+		- Install azure credentials plugin-in in jenkins. 
+		- While creating select type "azure service principal"
+		- Fill credentials details from output of previous command
+			| Field | Value |
+			| - | - |
+			| Subscription ID |	Your Azure subscription ID |
+			| Client ID | appId |
+			| Client Secred | password |
+			| Tenant ID | tenant |
 
-#In ubuntu login as jenkins user
-	sudo su -s /bin/bash jenkins
-	
-	Enter password
-	
-#Verify docker, helm, kubectl and azure cli installation if not install.
-
-#As jenkins user setup azure resource group, k8s cluster and container registry.
-		#login to azure through cli
-			az login --use-device-code    // and login through browser
-		
-		# Create Resource Group
-			az group create --location centralus --name aks_deploy
-
-		#Create Azure service principal with Contributor role in created azure resource group store the output somewhere safe
-			az ad sp create-for-rbac --name aksdeployServicePrincipal --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/aks_deploy
-
-		#Update Azure service principal in Jenkins credentials. 
-			Install azure credentials plugin-in in jenkins. 
-
-			While creating select type "azure service principal"
-
-			#Get from output of previous command
-				Subscription ID: 	Your Azure subscription ID.
-				Client ID: 			"appId"
-				Client Secred: 		"password"
-				Tenant ID: 			"tenant"
 			
-#Run "create-azure-resource" branch build in Jenkins to create following resources.
-	- AKS cluster with 2 nodes.
-	- Azure container registry.
-	- Link ACR to AKS.
-	- Create a namespace in k8s cluster.
+	5. Run Jenkins pipeline.
+	> [!IMPORTANT] Make sure in "create_azure_setup.sh" only below steps are uncommented.
+	> - Create AKS cluster with 2 nodes.
+	> - Create Azure container registry (ACR).
+	> - Link ACR to AKS.
+	> - Create a namespace in AKS cluster.
 
-		#Verify aks credentials in /var/lib/jenkins/.kube/config
-			cat /var/lib/jenkins/.kube/config
+	6. View pipeline log. Below stages should be run successfully.
+		- Azure resource creation.
+		- Build and push image to dockerHub.
+		- Build and push image to Azure CR.
+		- Deploy to Kubernetes.
 
-        #Azure cli logged in accounts list
-			az account list
+	7. App will be installed in cluster and can be accessed using External IP of cluster.
+		- **In Jenkins machine login as "jenkins" user.**
+			- Get external IP of cluster.
+				```
+				kubectl get service store-front
+				```
+			- Access the deployed app using the IP address.
+
+	8. Cleanup azure resources.
+		```
+		az group delete --name aks_deploy --yes --no-wait
+		```
+	9. Clear and logout from all resources.
+		- Delete AKS credentials
+			```
+			rm -rf /var/lib/jenkins/.kube/
+			```
+		- Remove **kubectl** contexts.
+			```
+			kubectl config unset current-context
+			```
+		- Logout from Azure.
+			```
+			az logout
+			```
+		- (Optional) Stop ngrok terminal CNTRL+C.
 		
-		#kubectl commands for debug or info
-			kubectl get nodes  										//Check nodes
-			kubectl config get-contexts 							//Get k8s contexts
-            kubectl get namespace                                   //Get list of namespaces
-			kubectl get deployments --all-namespaces=true			//Get deployments in all namespaces
-			kubectl get deployments --namespace mcr-app-deployment	//Get deployments in specific namespace
-		
---------------------------------------------------------------------------------------------------------------------------------
+		- Stop Jenkins service.
+			```
+			sudo service jenkins stop
+			```
+			
+			
+### Debug commands in Jenkins machine:
+- AKS credentials for kubectl will be stored in /var/lib/jenkins/.kube/config
 
-#Use Jenkins 'main' pipeline to run main workflow with below stages
-	-			<list stages>
-    kubectl apply -f aks-store-quickstart.yaml
-		
---------------------------------------------------------------------------------------------------------------------------------
-#In Ubuntu jenkins user, Get external IP to access app in k8s cluster
-	kubectl get service store-front           // to watch continuesly add flag:  --watch
-	
-#Access the app through external IP using a browser
+- Azure List all logged accounts.
+	```
+	az account list
+	```			
 
-#Cleanup Resources
-	az group delete --name aks_deploy --yes --no-wait
-	
-#Logout from resources
-		kubectl config unset current-context
-		az logout
-		
-#Verify /var/lib/jenkins/.kube/config file is deleted
-    rm -rf /var/lib/jenkins/.kube/
-
-#Stop ngrok terminal CNTRL+C
-
-#Stop Jenkins service
-	sudo service jenkins stop
-
-
-
-	            /////cleanup for azure resource creation
-
-            main to start to last automated
-            demo branch
-            resource creation branch
+- **kubectl** commands for debug or info
+	- List nodes
+		```
+		kubectl get nodes
+		```
+	- Get k8s contexts
+		```
+		kubectl config get-contexts
+		```
+	- Get list of namespaces
+		```
+		kubectl get namespace
+		```
+	- Get deployments in all namespaces
+		```
+		kubectl get deployments --all-namespaces=true
+		```
+	- Get deployments in specific namespace
+		```
+		kubectl get deployments --namespace mcr-app-deployment
+		```
