@@ -58,7 +58,7 @@
 <details>
 <summary>Expand if you are running Jenkins in local port.</summary>
 
-#### Install "ngrok" and run below command with your jenkins port to get public URL for Jenkins
+Install "ngrok" and run below command with your jenkins port to get public URL for Jenkins
 ```
 ngrok port 8080
 ```
