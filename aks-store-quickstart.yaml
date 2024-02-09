@@ -1,3 +1,5 @@
+# Source
+# https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-portal?tabs=azure-cli
 apiVersion: apps/v1
 kind: Deployment
 metadata:
