@@ -20,7 +20,7 @@
 	1. Azure resource group.
 	2. Azure service principal with a "Contributor" role for that resource group.
 
-Click [here](#azure-pre-requistes) to create both new.
+	Click [here](#azure-pre-requistes) to create both new.
 
 3. Jenkins setup with below-installed plugins, credentials, and tools.
 	1. **Plugins:**
@@ -53,43 +53,39 @@ Click [here](#azure-pre-requistes) to create both new.
 	```
 	sudo service jenkins start
 	```
+	<details>
+	<summary>Expand if you are running Jenkins in a local port.</summary>
 
----
-<details>
-<summary>Expand if you are running Jenkins in a local port.</summary>
-
-Install "ngrok" and run the below command with your Jenkins port to get the public URL for Jenkins
-```
-ngrok port 8080
-```
-- Copy the ngrok URL from the terminal, open it in the browser, and log in.
-- This will be our public Jenkins URL.
-</details>
-
----
+	Install "ngrok" and run the below command with your Jenkins port to get the public URL for Jenkins
+	```
+	ngrok port 8080
+	```
+	- Copy the ngrok URL from the terminal, open it in the browser, and log in.
+	- This will be our public Jenkins URL.
+	</details>
 
 2. Use Jenkins URL in
 1. Set up Jenkins URL in GitHub repository webhook.
 2. **Optional:** Set up Jenkins URL in VScode for pipeline lint. (With Jenkins pipeline lint plugin)
 
 
-> [!IMPORTANT] Make sure before running pipeline the file "create_azure_setup.sh" has only the below steps uncommented.
+# Run Jenkins pipeline.
+> [!IMPORTANT] 
+> Make sure before running pipeline the file "create_azure_setup.sh" has only the below steps uncommented.
 > - Create an AKS cluster with 2 nodes.
 > - Create Azure container registry (ACR).
 > - Link ACR to AKS.
 > - Create a namespace in the AKS cluster.
 
-# Run Jenkins pipeline.
-
 1. Commit to GitHub or manually start the pipeline.
 
-1. View the pipeline log. The below stages should be run successfully.
+2. View the pipeline log. The below stages should be run successfully.
 	- Azure resource creation.
 	- Build and push the image to dockerHub.
 	- Build and push images to Azure CR.
 	- Deploy to Kubernetes.
 
-2. The app will be installed in the cluster and accessed using the External IP of the cluster.
+3. The app will be installed in the cluster and accessed using the External IP of the cluster.
 	- **In the Jenkins machine log in as "jenkins" user.** (Refer to section "Pre-requisites" 2.3 )
 	- Get the external IP of the cluster.
 		```
