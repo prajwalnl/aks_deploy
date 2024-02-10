@@ -156,19 +156,15 @@ Create an Azure resources using azure CLI in different machine.
 	```
 	az group create --location centralus --name <resource_group_name>
 	```
-3. Create AKS cluster with two worker nodes.
-	```
-	az aks create --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER} --node-count 2 --generate-ssh-keys
-	```
-4. Create Azure Container Registry.
+3. Create Azure Container Registry.
 	```
 	az acr create --resource-group ${AKS_RESOURCE_GROUP} --name ${ACR_NAME} --sku Standard --location ${AKS_REGION}
 	```
-5. Providing required permission for downloading Docker image from ACR into AKS cluster.
+4. Create AKS cluster with two worker nodes and attach Azure container registry.
 	```
-	az aks update -n ${AKS_CLUSTER} -g ${AKS_RESOURCE_GROUP} --attach-acr ${ACR_NAME}
+	az aks create --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER} --node-count 2 --generate-ssh-keys --attach-acr ${ACR_NAME}
 	```
-6. Create an Azure service principal using your subscription ID with a "Contributor" role in the created Azure resource group. ***Store the output somewhere safe***.
+5. Create an Azure service principal using your subscription ID with a "Contributor" role in the created Azure resource group. ***Store the output somewhere safe***.
 	```
 	az ad sp create-for-rbac --name <servicePrincipalName> --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/<resource_group_name>
 	```

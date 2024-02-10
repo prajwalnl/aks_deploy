@@ -34,7 +34,7 @@ pipeline {
             steps {
                 // Build springboot app jar
                 sh 'ls'
-                sh 'mvn clean install'
+                sh 'mvn --version' //clean install'
                 sh 'ls'
             }
         }
