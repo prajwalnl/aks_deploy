@@ -32,10 +32,7 @@ pipeline {
         stage('Maven build') {
             steps {
                 // Build springboot app jar
-                sh 'ls'
-                sh 'mvn --version'
                 sh 'mvn clean install'
-                sh 'ls'
             }
         }
 
