@@ -1,4 +1,8 @@
 pipeline {
+    tools {
+        maven 'Maven3'
+    }
+
     agent any
 
     environment {
@@ -26,15 +30,11 @@ pipeline {
             }
 
         stage('Maven build') {
-            agent {
-                docker {
-                    image 'maven:3.3-jdk-8'
-                }
-            }
             steps {
                 // Build springboot app jar
                 sh 'ls'
-                sh 'mvn --version' //clean install'
+                sh 'mvn --version'
+                sh 'mvn clean install'
                 sh 'ls'
             }
         }

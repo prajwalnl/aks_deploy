@@ -154,19 +154,19 @@ Create an Azure resources using azure CLI in different machine.
 	```
 2. Create a Resource Group.
 	```
-	az group create --location centralus --name <resource_group_name>
+	az group create --location centralus --name <aks_resource_group>
 	```
 3. Create Azure Container Registry.
 	```
-	az acr create --resource-group ${AKS_RESOURCE_GROUP} --name ${ACR_NAME} --sku Standard --location ${AKS_REGION}
+	az acr create --resource-group <aks_resource_group> --name <acr_name> --sku Standard --location centralus
 	```
 4. Create AKS cluster with two worker nodes and attach Azure container registry.
 	```
-	az aks create --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER} --node-count 2 --generate-ssh-keys --attach-acr ${ACR_NAME}
+	az aks create --resource-group <aks_resource_group> --name <aks_name> --node-count 2 --generate-ssh-keys --attach-acr <acr_name>
 	```
 5. Create an Azure service principal using your subscription ID with a "Contributor" role in the created Azure resource group. ***Store the output somewhere safe***.
 	```
-	az ad sp create-for-rbac --name <servicePrincipalName> --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/<resource_group_name>
+	az ad sp create-for-rbac --name <servicePrincipalName> --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/<aks_resource_group>
 	```
 
 # Jenkins-Azure credentials
