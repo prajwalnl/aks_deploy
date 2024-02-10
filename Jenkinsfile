@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-                helloWorld = "Hello World!"
                 ACR_NAME = 'testacr'
                 DOCKER_IMAGE_NAME = 'testimage'  
             }
@@ -12,13 +11,7 @@ pipeline {
             steps {
                 input 'Do you approve deployment?'
                 script {
-                    //Run Bash file
-                    //Multiline script
-                    //create downloadable artifact "Demo.txt"
-                    sh '''
-                        chmod a+x demo_bash_script.sh
-                        ./demo_bash_script.sh
-                    '''
+                    sh 'echo Hello'
                 }   
             }
         }
@@ -41,8 +34,10 @@ pipeline {
         //             script {
         //                 // Build Docker image 
         //                 sh 'docker build -t testimage .'
+
         //                 // Tag Docker image name
-        //                 sh 'docker tag testimage aksdeploypoc.azurecr.io/testimage:latest'
+        //                 sh 'docker tag testimage testacr.azurecr.io/testimage:latest'
+
         //                 // Push Docker image to Azure Container Registry
         //                 sh 'docker push testacr.azurecr.io/testimage:latest'
         //             }

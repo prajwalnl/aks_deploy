@@ -6,7 +6,7 @@
 
 3. Create an Azure container registry (ACR) and AKS cluster in an existing resource group.
 
-4. Build a docker image and push it to DockerHub and Azure container registry.
+4. Build a docker image and push it to Azure container registry.
 
 5. Deploy to azure AKS cluster.
 
@@ -24,10 +24,8 @@
 
 3. Jenkins setup with below-installed plugins, credentials, and tools.
 	1. **Credentials:** Add the below credentials in Jenkins credential manager.
-		- DockerHub registry.
 		- Azure service principal. [help](#jenkins-azure-credentials)
 		- GitHub Personal access token (PAT) to trigger Jenkins pipeline on GitHub commit (only for private GitHub repos)
-		- Sample credentials file with the text "Hello"
 
 	2. **Plugins:**
 		- GitHub Branch Source Plugin
@@ -81,7 +79,6 @@
 
 2. View the pipeline log. The below stages should be run successfully.
 	- Azure resource creation.
-	- Build and push the image to dockerHub.
 	- Build and push images to Azure CR.
 	- Deploy to Kubernetes.
 
@@ -122,7 +119,6 @@
 		```
 		sudo service jenkins stop
 		```
-
 
 # Debug commands in Jenkins machine:
 - AKS credentials for kubectl will be stored in /var/lib/jenkins/.kube/config
