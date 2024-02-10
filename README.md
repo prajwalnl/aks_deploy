@@ -54,12 +54,16 @@ This project helps to do the below workflow:
 	1. Set up Jenkins URL in GitHub repository webhook.
 	2. **Optional:** Set up Jenkins URL in VScode for pipeline lint. (With Jenkins pipeline lint plugin)
 
-3. Create Azure resources and Azure service principal.
+3. Add Maven in Jenkins.
+	- Go to "<jenkins_base_url>/manage/configureTools" --> Maven installations.
+	- Add Maven with variable name **"Maven3"**.
+
+4. Create Azure resources and Azure service principal.
 	Click [here](#azure-pre-requistes) to create new.
 
-4. Create Azure credentials in Jenkins. [help](#jenkins-azure-credentials)
+5. Create Azure credentials in Jenkins. [help](#jenkins-azure-credentials)
 
-5. Update "Jenkinsfile" with created resources names.
+6. Update "Jenkinsfile" with created resources names.
 
 
 # Run Jenkins pipeline.
@@ -154,23 +158,19 @@ Create an Azure resources using azure CLI in different machine.
 	```
 2. Create a Resource Group.
 	```
-	az group create --location centralus --name <resource_group_name>
+	az group create --location centralus --name <aks_resource_group>
 	```
-3. Create AKS cluster with two worker nodes.
+3. Create Azure Container Registry.
 	```
-	az aks create --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER} --node-count 2 --generate-ssh-keys
+	az acr create --resource-group <aks_resource_group> --name <acr_name> --sku Standard --location centralus
 	```
-4. Create Azure Container Registry.
+4. Create AKS cluster with two worker nodes and attach Azure container registry.
 	```
-	az acr create --resource-group ${AKS_RESOURCE_GROUP} --name ${ACR_NAME} --sku Standard --location ${AKS_REGION}
+	az aks create --resource-group <aks_resource_group> --name <aks_name> --node-count 2 --generate-ssh-keys --attach-acr <acr_name>
 	```
-5. Providing required permission for downloading Docker image from ACR into AKS cluster.
+5. Create an Azure service principal using your subscription ID with a "Contributor" role in the created Azure resource group. ***Store the output somewhere safe***.
 	```
-	az aks update -n ${AKS_CLUSTER} -g ${AKS_RESOURCE_GROUP} --attach-acr ${ACR_NAME}
-	```
-6. Create an Azure service principal using your subscription ID with a "Contributor" role in the created Azure resource group. ***Store the output somewhere safe***.
-	```
-	az ad sp create-for-rbac --name <servicePrincipalName> --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/<resource_group_name>
+	az ad sp create-for-rbac --name <servicePrincipalName> --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/<aks_resource_group>
 	```
 
 # Jenkins-Azure credentials
