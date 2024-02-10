@@ -5,8 +5,8 @@
 # https://www.coachdevops.com/2023/05/how-to-deploy-springboot-microservices.html
 # This is the shell script for creating AKS cluster, ACR Repo and a namespace
 
-AKS_RESOURCE_GROUP=test_deploy
 AKS_REGION=centralus
+AKS_RESOURCE_GROUP=test_deploy
 AKS_CLUSTER=testk8s	# Azure Kubernetes Services cluster name
 ACR_NAME=tesracr   	# Azure Container Registry name
 AKS_CLUSTER_NAMESPACE=mcr-app-deployment # k8s cluster namespace name
