@@ -2,119 +2,43 @@ pipeline {
     agent any
 
     environment {
-                helloWorld = "Hello World!"
-                ACR_NAME = 'aksdeploypoc'
-                DOCKER_IMAGE_NAME = 'aksdeploypocimage'  
+                ACR_NAME = 'tesracr' //'testacr'
+                DOCKER_IMAGE_NAME = 'testimage'  
             }
 
     stages {
-        // stage('Azure resource creation') {
-        //         steps {
-        //             input 'Do you approve deployment?' 
-        //             withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
-        //                 script {
-        //                     sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-        //                     sh 'az account list'
-        //                     //sh 'chmod a+x create_azure_setup.sh'
-        //                     //sh './create_azure_setup.sh'                  // Run except resource group creation.
-        //                 }
-        //             }
-        //         }
-        //     }
+        stage('Build and push image to Azure CR') {
+                steps {
+                    withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
+                        script {
+                            //sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                            sh 'az account list'
 
-        // stage('Build and push image to dockerHub') {
-        //     environment {
-        //         dockerHubRegistryName = "prajwalnl/aks_deploy_poc"
-        //         registryURL = "https://registry.hub.docker.com"
-        //         registryCredential = 'dockerhub-credential'        
-        //     }
-        //     steps {
-        //         script {
-        //             dockerHubImage = docker.build dockerHubRegistryName + ":$BUILD_NUMBER"
-        //             docker.withRegistry( registryURL, registryCredential ) {   // Authenticate with Docker Hub
-        //                 dockerHubImage.push()       // Push Docker image to Docker Hub
-        //             }
-        //         }
-        //     }
-        // }
+                            // Build Docker image 
+                            //sh 'docker build -t testimage .'
+                            sh 'docker build -t ${DOCKER_IMAGE_NAME} .'
 
-        // stage('Build and push image to Azure CR') {
-        //         steps {
-        //             script {
-        //                 // Build Docker image 
-        //                 sh 'docker build -t aksdeploypocimage .'
-        //                 // Tag Docker image name
-        //                 sh 'docker tag aksdeploypocimage aksdeploypoc.azurecr.io/aksdeploypocimage:latest'
-        //                 // Push Docker image to Azure Container Registry
-        //                 sh 'docker push aksdeploypoc.azurecr.io/aksdeploypocimage:latest'
-        //             }
-        //         }
-        //     }
+                            // Tag Docker image name
+                            //sh 'docker tag ${ACR_NAME} testacr.azurecr.io/testimage:latest'
+                            sh 'docker tag ${DOCKER_IMAGE_NAME} ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
+
+                            // Push Docker image to Azure Container Registry
+                            //sh 'docker push testacr.azurecr.io/testimage:latest'
+                            sh 'docker push ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
+                        }
+                    }
+                }
+            }
 
         // stage('Deploy to Kubernetes') {
         //     steps {
         //         sh 'kubectl apply -f aks-store-quickstart.yaml'
         //     }
         // }
-
-        //////////////////////////////////////////////////////////////////////////////////////
-
-        // stage('No Image') {
-        //     steps {
-        //         echo 'Executing stage without docker image'
-        //         sh 'echo ${helloWorld}'
-        //         sh 'cat /etc/os-release'
-        //         script {
-        //             echo 'This is a step inside a script block'
-        //             echo "${helloWorld}"         
-        //         }
-        //     }
-        // }
-
-        stage('Multi script stage') {
-            steps {
-                input 'Do you approve deployment?'
-                script {
-                    //Run Bash file
-                    //Multiline script
-                    //create downloadable artifact "Demo.txt"
-                    sh '''
-                        chmod a+x demo_bash_script.sh
-                        ./demo_bash_script.sh
-                    '''
-                }   
-            }
-        }
-
-        // stage('Use and read credentials file') {
-        //     steps {
-        //         withCredentials([file(credentialsId: 'file', variable: 'CREDENTIALS_FILE')]) {
-        //             script {
-        //                 def credentialsContent = readFile(file: "$CREDENTIALS_FILE")
-        //                 echo "Credentials File Content: $credentialsContent"
-        //             }
-        //         }
-        //     }
-        // }
-
-        // stage('Docker Image') {
-        //     agent {
-        //         docker {
-        //             image 'alpine:latest'
-        //         }
-        //     }
-        //     steps {
-        //         echo 'Executing Job with docker image'
-        //         sh 'cat /etc/os-release'
-        //     }
-        // }
     }
 
     post {
-        always {
-            //Create build artifact.
-            archiveArtifacts artifacts: 'Demo.txt'  //, fingerprint: true, excludes: 'output/*.md' 
-            
+        always {            
             // Clean up Docker images, containers and workspace.
             script {
                 //sh 'docker rmi -f $(docker images -q)'
