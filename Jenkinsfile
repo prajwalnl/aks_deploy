@@ -8,7 +8,7 @@ pipeline {
                 AKS_RESOURCE_GROUP='test_deploy'
                 AKS_CLUSTER='testk8s'
                 AKS_CLUSTER_NAMESPACE='mcr-app-deployment'
-                DOCKER_IMAGE_NAME='demodockerimage'
+                DEMO_DOCKER_IMAGE_NAME='demodockerimage'
             }
 
     stages {
@@ -71,11 +71,11 @@ pipeline {
         // stage('Demo docker push to ACR') {
         //     steps {
         //         // Build Docker image
-        //         sh 'docker build -t ${DOCKER_IMAGE_NAME} -f Dockerfile-demo .'
+        //         sh 'docker build -t ${DEMO_DOCKER_IMAGE_NAME} -f Dockerfile-demo .'
         //         // Tag Docker image name
-        //         sh 'docker tag ${DOCKER_IMAGE_NAME} ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
+        //         sh 'docker tag ${DEMO_DOCKER_IMAGE_NAME} ${ACR_NAME}.azurecr.io/${DEMO_DOCKER_IMAGE_NAME}:latest'
         //         // Push Docker image to Azure Container Registry
-        //         sh 'docker push ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
+        //         sh 'docker push ${ACR_NAME}.azurecr.io/${DEMO_DOCKER_IMAGE_NAME}:latest'
         //     }
         // }
     }
