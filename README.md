@@ -1,4 +1,5 @@
-# This project helps to do the below workflow:
+# Jenkins, Helm, ACR, AKS
+This project helps to do the below workflow:
 
 1. Trigger pipeline in Jenkins on code push to github.
 
@@ -89,7 +90,7 @@
 2. Clear and log out from all resources.
 	- Delete AKS credentials
 		```
-		rm -rf /var/lib/jenkins/.kube/
+		rm -rf /var/lib/jenkins/.kube
 		```
 	- Remove **kubectl** contexts.
 		```
@@ -110,7 +111,7 @@
 		sudo service jenkins stop
 		```
 
-# Debug commands in Jenkins machine:
+# Debug commands in Jenkins machine
 - AKS credentials for kubectl will be stored in /var/lib/jenkins/.kube/config
 
 - Azure List all logged accounts.

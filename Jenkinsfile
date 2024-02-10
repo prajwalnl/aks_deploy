@@ -15,17 +15,12 @@ pipeline {
                 steps {
                     withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
                         script {
+                            // Azure login
                             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                             sh 'az account list'
-
+                            
+                            // Login to azure ACR
                             sh 'az acr login --name ${ACR_NAME}'
-
-                            // // Build Docker image 
-                            // sh 'docker build -t testimage .'
-                            // // Tag Docker image name
-                            // sh 'docker tag testimage testacr7.azurecr.io/testimage:latest'
-                            // // Push Docker image to Azure Container Registry
-                            // sh 'docker push testacr7.azurecr.io/testimage:latest'
 
                             // Build Docker image
                             sh 'docker build -t ${DOCKER_IMAGE_NAME} .'
