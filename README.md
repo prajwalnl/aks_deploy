@@ -1,30 +1,18 @@
 # This project helps to do the below workflow:
 
-1. Code push to GitHub.
+1. Trigger pipeline in Jenkins on code push to github.
 
-2. Trigger pipeline in Jenkins.
+2. Build a docker image and push it to Azure container registry.
 
-3. Create an Azure container registry (ACR) and AKS cluster in an existing resource group.
-
-4. Build a docker image and push it to Azure container registry.
-
-5. Deploy to azure AKS cluster.
-
+3. Deploy to azure AKS cluster.
 
 # Pre-requisites
-1. Access to this Github repo ready with required files and k8s manifest file.
+1. Access to this Github repo with required files.
 
 2. Azure account with an active subscription.
 
-3. Below resources in Azure are required.
-	1. Azure resource group.
-	2. Azure service principal with a "Contributor" role for that resource group.
-
-		Click [here](#azure-pre-requistes) to create both new.
-
 3. Jenkins setup with below-installed plugins, credentials, and tools.
 	1. **Credentials:** Add the below credentials in Jenkins credential manager.
-		- Azure service principal. [help](#jenkins-azure-credentials)
 		- GitHub Personal access token (PAT) to trigger Jenkins pipeline on GitHub commit (only for private GitHub repos)
 
 	2. **Plugins:**
@@ -43,7 +31,6 @@
 		- Azure CLI
 
 3. Create a new multibranch pipeline in Jenkins add the source as GitHub repo URL and set auto trigger for all branches. (Use GitHub PAT if repo is private)
-
 
 # Steps to set up the project:
 
@@ -66,19 +53,18 @@
 	1. Set up Jenkins URL in GitHub repository webhook.
 	2. **Optional:** Set up Jenkins URL in VScode for pipeline lint. (With Jenkins pipeline lint plugin)
 
+3. Create Azure resources and Azure service principal.
+	Click [here](#azure-pre-requistes) to create new.
+
+4. Create Azure credentials in Jenkins. [help](#jenkins-azure-credentials)
+
+5. Update "Jenkinsfile" with created resources names.
+
 
 # Run Jenkins pipeline.
-> [!IMPORTANT] 
-> Make sure before running pipeline the file "create_azure_setup.sh" has only the below steps uncommented.
-> - Create an AKS cluster with 2 nodes.
-> - Create Azure container registry (ACR).
-> - Link ACR to AKS.
-> - Create a namespace in the AKS cluster.
-
 1. Commit to GitHub or manually start the pipeline.
 
 2. View the pipeline log. The below stages should be run successfully.
-	- Azure resource creation.
 	- Build and push images to Azure CR.
 	- Deploy to Kubernetes.
 
@@ -108,6 +94,10 @@
 	- Remove **kubectl** contexts.
 		```
 		kubectl config unset current-context
+		```
+	- Delete Azure service principal.
+		```
+		az ad app delete --id <your-service-principal-app-id>
 		```
 	- Logout from Azure.
 		```
@@ -155,9 +145,9 @@
 > [!WARNING] 
 > Be cautious about creating resources in Azure and delete all resources after use.
 
-Create an Azure resource group and Azure service principal with a "Contributor" role for that resource group.
+Create an Azure resources using azure CLI in different machine.
 
-1. Run the below command, follow the instructions, and log in to your Azure account.
+1. Run the below commands, follow the instructions, and log in to your Azure account.
 	```
 	az login --use-device-code
 	```
@@ -165,7 +155,19 @@ Create an Azure resource group and Azure service principal with a "Contributor" 
 	```
 	az group create --location centralus --name <resource_group_name>
 	```
-3. Create an Azure service principal using your subscription ID with a "Contributor" role in the created Azure resource group. ***Store the output somewhere safe***.
+3. Create AKS cluster with two worker nodes.
+	```
+	az aks create --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER} --node-count 2 --generate-ssh-keys
+	```
+4. Create Azure Container Registry.
+	```
+	az acr create --resource-group ${AKS_RESOURCE_GROUP} --name ${ACR_NAME} --sku Standard --location ${AKS_REGION}
+	```
+5. Providing required permission for downloading Docker image from ACR into AKS cluster.
+	```
+	az aks update -n ${AKS_CLUSTER} -g ${AKS_RESOURCE_GROUP} --attach-acr ${ACR_NAME}
+	```
+6. Create an Azure service principal using your subscription ID with a "Contributor" role in the created Azure resource group. ***Store the output somewhere safe***.
 	```
 	az ad sp create-for-rbac --name <servicePrincipalName> --role Contributor --scopes /subscriptions/<subscriptionID>/resourceGroups/<resource_group_name>
 	```
