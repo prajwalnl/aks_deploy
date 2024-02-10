@@ -9,12 +9,13 @@ AKS_REGION=centralus
 AKS_RESOURCE_GROUP=test_deploy
 AKS_CLUSTER=testk8s	# Azure Kubernetes Services cluster name
 ACR_NAME=testacr   	# Azure Container Registry name
+
 AKS_CLUSTER_NAMESPACE=mcr-app-deployment # k8s cluster namespace name
 
 echo $AKS_RESOURCE_GROUP, $AKS_REGION, $AKS_CLUSTER, $ACR_NAME
 
 # Create Resource Group
-az group create --location ${AKS_REGION} --name ${AKS_RESOURCE_GROUP}
+az group create --location ${AKS_REGION} --name ${AKS_RESOURCE_GROUP}		
 
 # Create AKS cluster with two worker nodes
 az aks create --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER} --node-count 2 --generate-ssh-keys 
