@@ -54,12 +54,16 @@ This project helps to do the below workflow:
 	1. Set up Jenkins URL in GitHub repository webhook.
 	2. **Optional:** Set up Jenkins URL in VScode for pipeline lint. (With Jenkins pipeline lint plugin)
 
-3. Create Azure resources and Azure service principal.
+3. Add Maven in Jenkins.
+	- Go to "<jenkins_base_url>/manage/configureTools" --> Maven installations.
+	- Add Maven with variable name **"Maven3"**.
+
+4. Create Azure resources and Azure service principal.
 	Click [here](#azure-pre-requistes) to create new.
 
-4. Create Azure credentials in Jenkins. [help](#jenkins-azure-credentials)
+5. Create Azure credentials in Jenkins. [help](#jenkins-azure-credentials)
 
-5. Update "Jenkinsfile" with created resources names.
+6. Update "Jenkinsfile" with created resources names.
 
 
 # Run Jenkins pipeline.
