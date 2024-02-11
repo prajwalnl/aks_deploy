@@ -12,6 +12,7 @@ pipeline {
                 AKS_RESOURCE_GROUP='test_deploy'
                 AKS_CLUSTER='testk8s'
                 AKS_CLUSTER_NAMESPACE='helm-deployment'
+                HELM_CHART_NAME='aksdeploychart'
             }
 
     stages {
@@ -60,7 +61,7 @@ pipeline {
                     sh 'kubectl delete namespace ${AKS_CLUSTER_NAMESPACE} --wait=true --timeout=300s'
                 }
                 sh "kubectl create namespace ${AKS_CLUSTER_NAMESPACE}"
-                sh "helm upgrade first --install mychart --namespace ${AKS_CLUSTER_NAMESPACE}" //--set image.tag=$BUILD_NUMBER"
+                sh "helm upgrade first --install ${HELM_CHART_NAME} --namespace ${AKS_CLUSTER_NAMESPACE}" //--set image.tag=$BUILD_NUMBER"
                 }
             }
         }
