@@ -19,9 +19,7 @@ pipeline {
                 steps {
                     withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
                         script {
-                            sh 'ls -a /var/lib/jenkins/'
                             sh 'rm -rf /var/lib/jenkins/.kube/'
-                            sh 'ls -a /var/lib/jenkins/'
                             sh 'az logout'
                             // Azure login
                             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
