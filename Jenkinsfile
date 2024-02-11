@@ -22,6 +22,7 @@ pipeline {
                             // Azure login
                             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                             // Login to azure ACR
+                            sh 'az aks update -n testk8s -g test_deploy --attach-acr testacr7'
                             sh 'az acr login --name ${ACR_NAME}'
                         }
                     }
