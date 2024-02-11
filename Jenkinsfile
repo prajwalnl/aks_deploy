@@ -50,7 +50,7 @@ pipeline {
         stage ('Helm Deploy') {
           steps {
             script {
-                // az aks get-credentials????
+                sh 'az aks get-credentials --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER} --overwrite-existing'
                 sh "helm upgrade first --install mychart --namespace helm-deployment" //--set image.tag=$BUILD_NUMBER"
                 }
             }
