@@ -67,15 +67,64 @@ This project helps to do the below workflow:
 
 
 # Run Jenkins pipeline.
-1. Commit to GitHub or manually start the pipeline.
+1. Create helm chart for your project.(A working helm chart ***"aksdeploychart"*** is available, but below are the steps to create a new helm chart.)
+	- At the root of your project run below command to create a helm chart.
+		```
+		helm create <you_chart_name>
+		```
+	- A new folder will be created with <you_chart_name>, delete files excluding the below files
+		```
+		│   aks-store-quickstart.yaml
+		│   Dockerfile
+		│   Jenkinsfile
+		│   pom.xml
+		│   README.md
+		│
+		├───<you_chart_name>
+		│   │   .helmignore
+		│   │   Chart.yaml
+		│   │   values.yaml
+		│   │
+		│   └───templates
+		│           deployment.yaml
+		│           service.yaml
+		│           serviceaccount.yaml
+		│           _helpers.tpl
+		```
 
-2. View the pipeline log. The below stages should be run successfully.
+	- Update `<you_chart_name>/values.yml` with below values.
+		- `replicaCount: 1`
+		- Update docker image details.
+			```	
+				image:
+					repository: <your_repo_name>/<your_image_name>
+					pullPolicy: Always
+					tag: "latest"
+			```
+		- Fill below fields.
+			```
+			nameOverride: "<name>"
+			fullnameOverride: "<full_name>"
+			```
+		- Update "name" in `"serviceAccount"` section.
+			```
+			name: "<service_account_name>"
+			```	
+		- Update below service parameters.
+			```
+			service:
+				type: LoadBalancer
+				port: 8085
+			```
+3. Commit to GitHub or manually start the pipeline.
+
+4. View the pipeline log. The below stages should be run successfully.
 	- Build and push images to Azure CR.
 	- Deploy to Kubernetes.
 
-3. The app will be installed in the cluster and can be accessed using the External IP of the cluster.
+5. The app will be installed in the cluster and can be accessed using the External IP of the cluster.
 
-4. **In Jenkins machine**
+6. **In Jenkins machine**
 	- Login as "jenkins" user.
 		```
 		sudo su -s /bin/bash jenkins
@@ -85,6 +134,7 @@ This project helps to do the below workflow:
 		kubectl get service store-front
 		```
 	- Access the deployed app using the IP address.
+
 
 # Cleanup resources.
 1. Clean up resources in Azure by deleting the Azure resource group.
