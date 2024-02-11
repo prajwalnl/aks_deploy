@@ -79,8 +79,8 @@ pipeline {
                 //sh 'docker rmi -f $(docker images -q)'
                 //sh 'docker system prune -f'
                 deleteDir()
-                sh 'rm -rf /var/lib/jenkins/.kube/'
-                sh 'az logout'
+                //sh 'rm -rf /var/lib/jenkins/.kube/'
+                //sh 'az logout'
             }   
         }
         success {
