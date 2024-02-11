@@ -20,8 +20,6 @@ pipeline {
                     withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
                         script {
                             // Azure login
-                            sh 'rm -rf /var/lib/jenkins/.kube/'
-                            sh 'az logout'
                             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                             // Login to azure ACR
                             //sh 'az acr login --name ${ACR_NAME}'
@@ -81,8 +79,8 @@ pipeline {
                 //sh 'docker rmi -f $(docker images -q)'
                 //sh 'docker system prune -f'
                 deleteDir()
-                //sh 'rm -rf /var/lib/jenkins/.kube/'
-                //sh 'az logout'
+                sh 'rm -rf /var/lib/jenkins/.kube/'
+                sh 'az logout'
             }   
         }
         success {
