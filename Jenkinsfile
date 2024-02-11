@@ -37,16 +37,16 @@ pipeline {
         //     }
         // }
 
-        stage('SpringbootApp: docker push to ACR') {
-            steps {
-                // Build Docker image
-                sh 'docker build -t ${DOCKER_IMAGE_NAME} .'
-                // Tag Docker image name
-                sh 'docker tag ${DOCKER_IMAGE_NAME} ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
-                // Push Docker image to Azure Container Registry
-                sh 'docker push ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
-            }
-        }
+        // stage('SpringbootApp: docker push to ACR') {
+        //     steps {
+        //         // Build Docker image
+        //         sh 'docker build -t ${DOCKER_IMAGE_NAME} .'
+        //         // Tag Docker image name
+        //         sh 'docker tag ${DOCKER_IMAGE_NAME} ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
+        //         // Push Docker image to Azure Container Registry
+        //         sh 'docker push ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
+        //     }
+        // }
 
         //SpringbootApp deploy
         stage ('Helm Deploy') {
