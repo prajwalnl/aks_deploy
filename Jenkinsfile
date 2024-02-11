@@ -51,6 +51,7 @@ pipeline {
           steps {
             script {
                 sh 'az aks get-credentials --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER} --overwrite-existing'
+                sh 'kubectl create namespace helm-deployment'
                 sh "helm upgrade first --install mychart --namespace helm-deployment" //--set image.tag=$BUILD_NUMBER"
                 }
             }
