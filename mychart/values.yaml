@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: testacr7.azurecr.io/testabimage
+  repository: testacr7.azurecr.io/testsbimage
   tag: ""
   pullPolicy: Always
 
