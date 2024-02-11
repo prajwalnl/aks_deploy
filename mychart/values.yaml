@@ -10,6 +10,3 @@ service:
   type: LoadBalancer
   port: 8085
   targetPort: 8085
-
-env:
-  name: dev
