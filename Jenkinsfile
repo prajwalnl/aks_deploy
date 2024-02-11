@@ -19,9 +19,9 @@ pipeline {
                 steps {
                     withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
                         script {
-                            sh 'ls /var/lib/jenkins/'
+                            sh 'ls -a /var/lib/jenkins/'
                             sh 'rm -rf /var/lib/jenkins/.kube/'
-                            sh 'ls /var/lib/jenkins/'
+                            sh 'ls -a /var/lib/jenkins/'
                             sh 'az logout'
                             // Azure login
                             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
@@ -57,10 +57,12 @@ pipeline {
             script {               
                 def namespaceExists = sh(script: "kubectl get namespace ${AKS_CLUSTER_NAMESPACE}", returnStatus: true) == 0
                 if (!namespaceExists) {
-                    sh "kubectl create namespace ${AKS_CLUSTER_NAMESPACE}"
+                    echo "Namespace ${AKS_CLUSTER_NAMESPACE} does not exists."
                 } else {
                     echo "Namespace ${AKS_CLUSTER_NAMESPACE} already exists."
+                    sh 'kubectl delete namespace ${AKS_CLUSTER_NAMESPACE} --wait=true --timeout=300s'
                 }
+                sh "kubectl create namespace ${AKS_CLUSTER_NAMESPACE}"
                 sh "helm upgrade first --install mychart --namespace ${AKS_CLUSTER_NAMESPACE}" //--set image.tag=$BUILD_NUMBER"
                 }
             }
