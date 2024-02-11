@@ -22,39 +22,39 @@ pipeline {
                             // Azure login
                             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                             // Login to azure ACR
-                            sh 'az acr login --name ${ACR_NAME}'
+                            //sh 'az acr login --name ${ACR_NAME}'
                         }
                     }
                 }
             }
 
-        stage('Maven build') {
-            steps {
-                // Build springboot app jar
-                sh 'mvn clean install'
-            }
-        }
-
-        stage('SpringbootApp: docker push to ACR') {
-            steps {
-                // Build Docker image
-                sh 'docker build -t ${DOCKER_IMAGE_NAME} .'
-                // Tag Docker image name
-                sh 'docker tag ${DOCKER_IMAGE_NAME} ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
-                // Push Docker image to Azure Container Registry
-                sh 'docker push ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
-            }
-        }
-
-        //SpringbootApp deploy
-        // stage ('Helm Deploy') {
-        //   steps {
-        //     script {
-        //         // az aks get-credentials????
-        //         sh "helm upgrade first --install mychart --namespace helm-deployment --set image.tag=$BUILD_NUMBER"
-        //         }
+        // stage('Maven build') {
+        //     steps {
+        //         // Build springboot app jar
+        //         sh 'mvn clean install'
         //     }
         // }
+
+        // stage('SpringbootApp: docker push to ACR') {
+        //     steps {
+        //         // Build Docker image
+        //         sh 'docker build -t ${DOCKER_IMAGE_NAME} .'
+        //         // Tag Docker image name
+        //         sh 'docker tag ${DOCKER_IMAGE_NAME} ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
+        //         // Push Docker image to Azure Container Registry
+        //         sh 'docker push ${ACR_NAME}.azurecr.io/${DOCKER_IMAGE_NAME}:latest'
+        //     }
+        // }
+
+        //SpringbootApp deploy
+        stage ('Helm Deploy') {
+          steps {
+            script {
+                // az aks get-credentials????
+                sh "helm upgrade first --install mychart --namespace helm-deployment" //--set image.tag=$BUILD_NUMBER"
+                }
+            }
+        }
 
         // stage('kubectl deploy') {
         //     steps {
@@ -69,8 +69,8 @@ pipeline {
         always {            
             // Clean up Docker images, containers and workspace.
             script {
-                sh 'docker rmi -f $(docker images -q)'
-                sh 'docker system prune -f'
+                //sh 'docker rmi -f $(docker images -q)'
+                //sh 'docker system prune -f'
                 deleteDir()
             }   
         }
