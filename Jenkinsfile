@@ -20,10 +20,11 @@ pipeline {
                     withCredentials([azureServicePrincipal('aksdeployServicePrincipal')]) {
                         script {
                             // Azure login
+                            sh 'rm -rf /var/lib/jenkins/.kube/'
+                            sh 'az logout'
                             sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                             // Login to azure ACR
-                            sh 'az aks update -n testk8s -g test_deploy --attach-acr testacr7'
-                            sh 'az acr login --name ${ACR_NAME}'
+                            //sh 'az acr login --name ${ACR_NAME}'
                         }
                     }
                 }
@@ -51,7 +52,7 @@ pipeline {
         stage ('Helm Deploy') {
           steps {
             script {
-                //sh 'az aks get-credentials --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER} --overwrite-existing'
+                sh 'az aks get-credentials --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER} --overwrite-existing'
                 
                 def namespaceExists = sh(script: "kubectl get namespace ${AKS_CLUSTER_NAMESPACE}", returnStatus: true) == 0
                 if (!namespaceExists) {
